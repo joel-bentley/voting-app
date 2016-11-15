@@ -1,14 +1,5 @@
-# fcc-starter
-Development Boilerplate for React Projects with API server
-
-**Live Demo:** https://joel-bentley-fcc-starter.herokuapp.com/
-
-This code is designed to be used with the Free Code Camp full-stack challenges.
-
-This boilerplate uses create-react-app for client side development.
-
-Project is inspired by clementinejs and hackathon-starter boilerplate projects.
-Oauth code borrows from megaboilerplate and provides Github login.
+# voting-app
+Built for Voting App challenge on Free Code Camp. This project builds off my custom boilerplate project, fcc-starter.
 
 To use, first add .env files in root and /client. These files require info from Oauth application setup on your Github account.
 Use yarn to install dependencies within root and /client directories.

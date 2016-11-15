@@ -10,7 +10,7 @@ const NavigationBar = ({ router, isAuthenticated, displayName, avatar, handleLog
         <Navbar.Brand>
           <Link to="/">
             <Glyphicon glyph="fire"/>
-            FCC Starter Boilerplate
+            Voting App
           </Link>
         </Navbar.Brand>
         <Navbar.Toggle/>
