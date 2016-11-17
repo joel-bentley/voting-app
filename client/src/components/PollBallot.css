@@ -1,0 +1,14 @@
+button.list-group-item:focus,
+button.list-group-item.focus,
+button.list-group-item:active:focus,
+button.list-group-item.active:focus,
+button.list-group-item:active.focus,
+button.list-group-item.active.focus {
+  outline: none;
+  background-color: #ffffff;
+}
+
+button.list-group-item:focus:hover,
+button.list-group-item.focus:hover {
+  background-color: #f5f5f5;
+}
