@@ -1,13 +1,13 @@
 import React from 'react'
 import {
     Button,
-    FormControl,
     Glyphicon,
-    InputGroup,
     ListGroup,
     ListGroupItem,
     Panel
   } from 'react-bootstrap'
+
+import ControlledInput from './ControlledInput'
 
 class PollEdit extends React.Component {
   state = {
@@ -15,7 +15,6 @@ class PollEdit extends React.Component {
     pollChoices: [],
     isSubmitting: false,
     titleInputValue: '',
-    choiceInputValue: ''
   }
 
   componentWillMount() {
@@ -28,18 +27,8 @@ class PollEdit extends React.Component {
     }
   }
 
-  handleTitleInputChange = event => {
-    this.setState({ titleInputValue: event.target.value })
-  }
-
-  handleTitleInputKeyDown = event => {
-    if (event.keyCode === 13) {
-      this.handleTitleSubmitClick()
-    }
-  }
-
-  handleTitleSubmitClick = () => {
-    this.setState({ pollTitle: this.state.titleInputValue })
+  handleTitleSubmitClick = (newTitle) => {
+    this.setState({ pollTitle: newTitle })
   }
 
   handleTitleEditIconClick = () => {
@@ -66,22 +55,9 @@ class PollEdit extends React.Component {
     this.setState({ pollChoices: newChoiceList })
   }
 
-  handleChoiceInputChange = event => {
-    this.setState({ choiceInputValue: event.target.value })
-  }
-
-  handleChoiceInputKeyDown = event => {
-    if (event.keyCode === 13) {
-      this.handleChoiceSubmitClick()
-    }
-  }
-
-  handleChoiceSubmitClick = () => {
-    const { choiceInputValue } = this.state
-
-    if (choiceInputValue !== '') {
-      this.handleAddChoice(choiceInputValue)
-      this.setState({ choiceInputValue: '' })
+  handleChoiceSubmitClick = (newChoice) => {
+    if (newChoice !== '') {
+      this.handleAddChoice(newChoice)
     }
   }
 
@@ -110,20 +86,12 @@ class PollEdit extends React.Component {
         </span>
       </div>
     ) : (
-        <InputGroup>
-          <FormControl
-            type="text"
-            placeholder="Enter poll question here"
-            value={this.state.titleInputValue}
-            onChange={this.handleTitleInputChange}
-            onKeyDown={this.handleTitleInputKeyDown}
-           />
-          <InputGroup.Button>
-            <Button bsStyle="primary" onClick={this.handleTitleSubmitClick}>
-              Submit
-            </Button>
-          </InputGroup.Button>
-        </InputGroup>
+      <ControlledInput
+        placeholder="Enter poll question here"
+        onSubmit={this.handleTitleSubmitClick}
+        inputValue={this.state.titleInputValue}
+        buttonText="Submit"
+      />
     )
 
     return (
@@ -143,20 +111,13 @@ class PollEdit extends React.Component {
           </ListGroup>
         </Panel>
 
-        <InputGroup>
-          <FormControl
-            type="text"
-            placeholder="Enter new poll answer here"
-            value={this.state.choiceInputValue}
-            onChange={this.handleChoiceInputChange}
-            onKeyDown={this.handleChoiceInputKeyDown}
-           />
-          <InputGroup.Button>
-            <Button bsStyle="primary" onClick={this.handleChoiceSubmitClick}>
-              Submit
-            </Button>
-          </InputGroup.Button>
-        </InputGroup><br />
+        <ControlledInput
+          placeholder="Enter new poll answer here"
+          onSubmit={this.handleChoiceSubmitClick}
+          buttonText="Submit"
+        />
+
+        <br />
 
         <Button bsStyle="primary" disabled={isSubmitting} onClick={this.handlePollSubmitClick}>
           {
