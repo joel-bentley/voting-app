@@ -15,22 +15,15 @@ const PollResults = ({ poll }) => {
             const percentage = Math.floor(100 * (choice.votes / voteCount))
             return (
               <ListGroupItem key={`results-${index}`}>
-                <div>{choice.text}</div>
+                <span>{choice.text}</span>
+                &nbsp;&nbsp;
+                <span>{`(${choice.votes} votes)`}</span>
                 <ProgressBar label={percentage + '%'} now={percentage} />
               </ListGroupItem>
             )
           })
         }
       </ListGroup>
-    {/*  <ListGroup fill>
-           {
-             polls.map(poll => (
-               <ListGroupItem header={poll.title} onClick={() => handlePollClick(poll)}>
-                 Total Votes: {poll.voteCount}
-               </ListGroupItem>
-             ))
-           }
-         </ListGroup> */}
     </Panel>
   )
 }

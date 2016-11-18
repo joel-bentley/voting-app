@@ -7,10 +7,10 @@ import './PollBallot.css'
 class PollBallot extends React.Component {
   state = {
     selectedItem: null,
-    isLoading: false
+    isSubmitting: false
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const { poll } = this.props
 
     if (poll.choiceSubmitted) {
@@ -31,20 +31,20 @@ class PollBallot extends React.Component {
     const { handleVoteSubmit, poll } = this.props
     const { selectedItem } = this.state
 
-    this.setState({ isLoading: true })
+    this.setState({ isSubmitting: true })
 
     if (!poll.choiceSubmitted) {
       handleVoteSubmit(selectedItem)
     }
 
     setTimeout(() => {
-      this.setState({isLoading: false})
+      this.setState({isSubmitting: false})
     }, 2000)
   }
 
   render() {
     const { poll } = this.props
-    const { selectedItem, isLoading } = this.state
+    const { selectedItem, isSubmitting } = this.state
     return (
       <div>
         <Panel header={poll.title}>
@@ -69,9 +69,9 @@ class PollBallot extends React.Component {
               <Link to="/">View Results</Link>
             </div>
           ) : (
-            <Button bsStyle="primary" disabled={isLoading} onClick={() => this.handleSubmitClick()}>
+            <Button bsStyle="primary" disabled={isSubmitting} onClick={() => this.handleSubmitClick()}>
               {
-                isLoading ? (
+                isSubmitting ? (
                   <span>Submitting Vote...</span>
                 ) : (
                   <span>Submit Vote</span>

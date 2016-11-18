@@ -115,29 +115,15 @@ class App extends React.Component {
       }).catch(err => console.log('error:', err))
   }
 
-  // handleCountClick = () => {
-  //   addClicks()
-  //     .then(getClicks)
-  //     .then( res => {
-  //       const { clicks } = res.data
-  //       this.setState({ clicks })
-  //     }).catch(err => console.log('error:', err))
-  // }
-  //
-  // handleResetClick = () => {
-  //   resetClicks()
-  //     .then(getClicks)
-  //     .then( res => {
-  //       const { clicks } = res.data
-  //       this.setState({ clicks })
-  //     }).catch(err => console.log('error:', err))
-  // }
-
   handlePollClick = poll => {
     // this.props.router.transitionTo(`/poll/${poll.link}`)
   }
 
   handleVoteSubmit = () => {
+    //
+  }
+
+  handlePollEditSubmit = () => {
     //
   }
 
@@ -182,7 +168,7 @@ class App extends React.Component {
             <PollResults poll={polls[0]} />
           )}/>
           <Match pattern="/pollEdit" component={ props => (
-            <PollEdit headerText="Select a poll below to vote on" polls={polls} handlePollClick={this.handlePollClick} />
+            <PollEdit poll={polls[0]} handlePollEditSubmit={this.handlePollEditSubmit} />
           )}/>
 
 
