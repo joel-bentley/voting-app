@@ -3,12 +3,9 @@ import { Jumbotron } from 'react-bootstrap'
 
 import PollList from './PollList'
 
-const Intro = ({ polls, displayName }) => (
+const Intro = ({ polls }) => (
   <div>
     <Jumbotron>
-      {
-        displayName ? <h4>Welcome {displayName}!</h4> : ''
-      }
       <h1>Voting App</h1>
       <h3>An app for voting on user generated polls</h3>
     </Jumbotron>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, Match } from 'react-router'
+import { Link, Match, Redirect } from 'react-router'
 // import MatchWhenAuthorized from './components/MatchWhenAuthorized'
 //import axios from 'axios'
 
@@ -10,7 +10,7 @@ import Intro from './components/Intro'
 import Login from './components/Login'
 //import Home from './components/Home'
 
-import PollList from './components/PollList'
+//import PollList from './components/PollList'
 import PollBallot from './components/PollBallot'
 import PollResults from './components/PollResults'
 import PollEdit from './components/PollEdit'
@@ -127,7 +127,7 @@ class App extends React.Component {
 
   render() {
     const { router } = this.props
-    const { id, username, displayName, avatar } = this.state
+    const { displayName, avatar } = this.state
 
     const isAuthenticated = displayName !== ''
 
@@ -138,7 +138,7 @@ class App extends React.Component {
         <div className="container">
 
           <Match exactly pattern="/" component={() => (
-              <Intro {...{ polls, displayName }} />
+              <Intro {...{ polls }} />
           )}/>
 
           <Match pattern="/login" component={ props => (
@@ -154,7 +154,9 @@ class App extends React.Component {
 
 
           <Match exactly pattern="/:permalink" component={ props => {
-            const poll = polls.filter( poll => (poll.permalink === props.params.permalink))[0]
+            const { permalink } = props.params
+            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+
             return (
               poll ? (
                 <PollBallot poll={poll} handleVoteSubmit={this.handleVoteSubmit} />
@@ -168,19 +170,18 @@ class App extends React.Component {
           } }/>
 
           <Match pattern="/:permalink/results" component={ props => {
-            const poll = polls.filter( poll => (poll.permalink === props.params.permalink))[0]
+            const { permalink } = props.params
+            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+
             return (
-              poll ? (
+              poll.choiceSubmitted ? (
                 <PollResults poll={poll} />
               ) : (
-                <div>
-                  <h3>Poll not found</h3>
-                  <Link to="/">View available polls</Link>
-                </div>
+                <Redirect to={`/${permalink}`} />
               )
             )
           } }/>
-
+          
         </div>
       </div>
     )

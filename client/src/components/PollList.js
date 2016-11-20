@@ -8,8 +8,8 @@ const PollList = ({ polls }) => (
       polls.map((poll, index) => {
         const voteCount = poll.choices.map( choice => choice.votes).reduce((a, b) => (a + b))
         return (
-          <Link to={`/${poll.permalink}`}>{({ onClick }) => (
-              <ListGroupItem header={poll.title} onClick={onClick} key={`poll-${index}`}>
+          <Link to={`/${poll.permalink}`} key={`poll-${index}`}>{({ onClick }) => (
+              <ListGroupItem header={poll.title} onClick={onClick}>
                 Total votes: {voteCount}
               </ListGroupItem>
             )}

@@ -31,15 +31,15 @@ class PollBallot extends React.Component {
     const { handleVoteSubmit, poll } = this.props
     const { selectedItem } = this.state
 
-    this.setState({ isSubmitting: true })
+    if (!poll.choiceSubmitted && selectedItem) {
 
-    if (!poll.choiceSubmitted) {
+      this.setState({ isSubmitting: true })
       handleVoteSubmit(selectedItem)
-    }
 
-    setTimeout(() => {
-      this.setState({isSubmitting: false})
-    }, 2000)
+      setTimeout(() => {
+        this.setState({isSubmitting: false})
+      }, 2000)
+    }
   }
 
   render() {
@@ -67,18 +67,23 @@ class PollBallot extends React.Component {
             <div>
               <Button bsStyle="success" disabled={true}> Thank you for voting! <Glyphicon glyph="glyphicon-ok" /> </Button>
               &nbsp;&nbsp;&nbsp;
-              <Link to="/">View Results</Link>
+              <Link to={`/${poll.permalink}/results`}>View Results</Link>
             </div>
           ) : (
-            <Button bsStyle="primary" disabled={isSubmitting} onClick={() => this.handleSubmitClick()}>
-              {
-                isSubmitting ? (
-                  <span>Submitting Vote...</span>
-                ) : (
-                  <span>Submit Vote</span>
-                )
-              }
-            </Button>
+            
+            isSubmitting ? (
+              <Button bsStyle="primary">
+                Submitting Vote...
+              </Button>
+            ) : (
+              <div>
+                <Button bsStyle="primary" onClick={() => this.handleSubmitClick()}>
+                  Submit Vote
+                </Button>
+                &nbsp;&nbsp;&nbsp;
+                <span>You can view results after you vote</span>
+              </div>
+            )
           )
         }
 
