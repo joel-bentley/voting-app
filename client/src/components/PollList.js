@@ -1,21 +1,23 @@
 import React from 'react'
-import { ListGroup, ListGroupItem, Panel } from 'react-bootstrap'
+import { Link } from 'react-router'
+import { ListGroup, ListGroupItem } from 'react-bootstrap'
 
-const PollList = ({ headerText, polls, handlePollClick }) => (
-  <Panel header={headerText}>
-      <ListGroup fill>
-        {
-          polls.map((poll, index) => {
-            const voteCount = poll.choices.map( choice => choice.votes).reduce((a, b) => (a + b))
-            return (
-              <ListGroupItem header={poll.title} onClick={() => handlePollClick(poll)} key={`poll-${index}`}>
+const PollList = ({ polls }) => (
+  <ListGroup>
+    {
+      polls.map((poll, index) => {
+        const voteCount = poll.choices.map( choice => choice.votes).reduce((a, b) => (a + b))
+        return (
+          <Link to={`/${poll.permalink}`}>{({ onClick }) => (
+              <ListGroupItem header={poll.title} onClick={onClick} key={`poll-${index}`}>
                 Total votes: {voteCount}
               </ListGroupItem>
-            )
-          })
-        }
-      </ListGroup>
-    </Panel>
+            )}
+          </Link>
+        )
+      })
+    }
+  </ListGroup>
 )
 
 export default PollList

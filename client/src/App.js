@@ -1,6 +1,6 @@
 import React from 'react'
-import { Match } from 'react-router'
-import MatchWhenAuthorized from './components/MatchWhenAuthorized'
+import { Link, Match } from 'react-router'
+// import MatchWhenAuthorized from './components/MatchWhenAuthorized'
 //import axios from 'axios'
 
 import { githubLogin, logout } from './utils/oauth';
@@ -9,7 +9,6 @@ import NavigationBar from './components/NavigationBar'
 import Intro from './components/Intro'
 import Login from './components/Login'
 //import Home from './components/Home'
-import Profile from './components/Profile'
 
 import PollList from './components/PollList'
 import PollBallot from './components/PollBallot'
@@ -28,6 +27,7 @@ import './App.css'
 /////////////////////////////////////////
 const polls = [
   {
+    permalink: 'bCvQ1',
     title: 'What is your opinion on poll 1?',
     choices: [
       {
@@ -43,6 +43,7 @@ const polls = [
     ],
     choiceSubmitted: null
   }, {
+    permalink: 'bCvQ2',
     title: 'What is your opinion on poll 2?',
     choices: [
       {
@@ -58,6 +59,7 @@ const polls = [
     ],
     choiceSubmitted: 1
   }, {
+    permalink: 'bCvQ3',
     title: 'What is your opinion on poll 3?',
     choices: [
       {
@@ -115,10 +117,6 @@ class App extends React.Component {
       }).catch(err => console.log('error:', err))
   }
 
-  handlePollClick = poll => {
-    // this.props.router.transitionTo(`/poll/${poll.link}`)
-  }
-
   handleVoteSubmit = () => {
     //
   }
@@ -129,7 +127,7 @@ class App extends React.Component {
 
   render() {
     const { router } = this.props
-    const { id, username, displayName, publicRepos, avatar } = this.state
+    const { id, username, displayName, avatar } = this.state
 
     const isAuthenticated = displayName !== ''
 
@@ -140,17 +138,7 @@ class App extends React.Component {
         <div className="container">
 
           <Match exactly pattern="/" component={() => (
-            // isAuthenticated ? (
-            //   <Home {...{ displayName, clicks }}
-            //         handleCountClick={this.handleCountClick}
-            //         handleResetClick={this.handleResetClick}/>
-            // ) : (
-              <Intro />
-            // )
-          )}/>
-
-          <MatchWhenAuthorized pattern="/profile" isAuthenticated={isAuthenticated} component={() => (
-            <Profile  {...{ id, username, displayName, publicRepos }}/>
+              <Intro {...{ polls, displayName }} />
           )}/>
 
           <Match pattern="/login" component={ props => (
@@ -158,19 +146,40 @@ class App extends React.Component {
           )}/>
 
 
-          <Match pattern="/pollList" component={ props => (
-            <PollList headerText="Select a poll below to vote on" polls={polls} handlePollClick={this.handlePollClick} />
-          )}/>
-          <Match pattern="/PollBallot" component={ props => (
-            <PollBallot poll={polls[0]} handleVoteSubmit={this.handleVoteSubmit} />
-          )}/>
-          <Match pattern="/pollResults" component={ props => (
-            <PollResults poll={polls[0]} />
-          )}/>
+
           <Match pattern="/pollEdit" component={ props => (
             <PollEdit poll={polls[0]} handlePollEditSubmit={this.handlePollEditSubmit} />
           )}/>
 
+
+
+          <Match exactly pattern="/:permalink" component={ props => {
+            const poll = polls.filter( poll => (poll.permalink === props.params.permalink))[0]
+            return (
+              poll ? (
+                <PollBallot poll={poll} handleVoteSubmit={this.handleVoteSubmit} />
+              ) : (
+                <div>
+                  <h3>Poll not found</h3>
+                  <Link to="/">View available polls</Link>
+                </div>
+              )
+            )
+          } }/>
+
+          <Match pattern="/:permalink/results" component={ props => {
+            const poll = polls.filter( poll => (poll.permalink === props.params.permalink))[0]
+            return (
+              poll ? (
+                <PollResults poll={poll} />
+              ) : (
+                <div>
+                  <h3>Poll not found</h3>
+                  <Link to="/">View available polls</Link>
+                </div>
+              )
+            )
+          } }/>
 
         </div>
       </div>
