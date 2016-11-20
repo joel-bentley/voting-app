@@ -51,9 +51,10 @@ class PollBallot extends React.Component {
           <ListGroup fill>
             {
               poll.choices.map((choice, index) => {
+                const choiceSubmitted = index === selectedItem
                 return (
                   <ListGroupItem onClick={() => this.handleOptionClick(index)} key={`choice-${index}`}>
-                    <Radio checked={index === selectedItem}> {choice.text} </Radio>
+                    <Radio checked={choiceSubmitted} readOnly={choiceSubmitted}> {choice.text} </Radio>
                   </ListGroupItem>
                 )
               })
