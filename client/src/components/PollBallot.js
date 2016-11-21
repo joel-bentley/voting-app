@@ -45,8 +45,19 @@ class PollBallot extends React.Component {
   render() {
     const { poll } = this.props
     const { selectedItem, isSubmitting } = this.state
+    const twitterHref = 'http://twitter.com/share?text=' +
+                        `${poll.title}${'%0A'}Vote here: ` +
+                        `&url=${window.location.href}`
     return (
       <div>
+        <span style={{float: 'right'}}>
+          <Button
+            bsStyle="primary"
+            href={twitterHref}
+            target="_blank">
+            Share poll on Twitter
+          </Button>
+        </span>
         <Panel header={poll.title}>
           <ListGroup fill>
             {
@@ -70,7 +81,7 @@ class PollBallot extends React.Component {
               <Link to={`/${poll.permalink}/results`}>View Results</Link>
             </div>
           ) : (
-            
+
             isSubmitting ? (
               <Button bsStyle="primary">
                 Submitting Vote...

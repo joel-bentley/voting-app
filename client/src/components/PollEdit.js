@@ -77,7 +77,7 @@ class PollEdit extends React.Component {
   render() {
     const { pollTitle, pollChoices, isSubmitting } = this.state
 
-    const panelTitle = pollTitle ? (
+    const panelHeader = pollTitle ? (
       <div>
         <span>{pollTitle}</span>
         &nbsp;&nbsp;
@@ -96,7 +96,7 @@ class PollEdit extends React.Component {
 
     return (
       <div>
-        <Panel header={panelTitle}>
+        <Panel header={panelHeader}>
           <ListGroup>
             {
               pollChoices.map((choice, index) => (
