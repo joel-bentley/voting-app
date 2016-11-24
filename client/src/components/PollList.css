@@ -1,0 +1,10 @@
+.poll-edit-buttons {
+  float: right;
+  position: relative;
+  bottom: 44px;
+  right: 14px;
+}
+
+.btn {
+  padding: 3px 0px 1px 6px;
+}

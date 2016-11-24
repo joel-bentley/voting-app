@@ -8,9 +8,8 @@ import { githubLogin, logout } from './utils/oauth';
 import NavigationBar from './components/NavigationBar'
 import Intro from './components/Intro'
 import Login from './components/Login'
-//import Home from './components/Home'
 
-//import PollList from './components/PollList'
+import PollList from './components/PollList'
 import PollBallot from './components/PollBallot'
 import PollResults from './components/PollResults'
 import PollEdit from './components/PollEdit'
@@ -41,7 +40,8 @@ const polls = [
         votes: 10
       }
     ],
-    choiceSubmitted: null
+    choiceSubmitted: null,
+    myPoll: true
   }, {
     permalink: 'bCvQ2',
     title: 'What is your opinion on poll 2?',
@@ -57,7 +57,8 @@ const polls = [
         votes: 1
       }
     ],
-    choiceSubmitted: 1
+    choiceSubmitted: 1,
+    myPoll: true
   }, {
     permalink: 'bCvQ3',
     title: 'What is your opinion on poll 3?',
@@ -73,7 +74,8 @@ const polls = [
         votes: 0
       }
     ],
-    choiceSubmitted: null
+    choiceSubmitted: null,
+    myPoll: false
   }
 ]
 /////////////////////////////////////////
@@ -125,6 +127,10 @@ class App extends React.Component {
     //
   }
 
+  handlePollDelete = () => {
+    //
+  }
+
   render() {
     const { router } = this.props
     const { displayName, avatar } = this.state
@@ -137,23 +143,17 @@ class App extends React.Component {
 
         <div className="container">
 
-          <Match exactly pattern="/" component={() => (
+          <Match exactly pattern="/" render={() => (
               <Intro {...{ polls }} />
           )}/>
 
-          <Match pattern="/login" component={ props => (
+          <Match pattern="/login" render={ props => (
             <Login {...props} {...{ isAuthenticated, router }} handleLogin={this.handleLogin}/>
           )}/>
 
 
 
-          <Match pattern="/pollEdit" component={ props => (
-            <PollEdit poll={polls[0]} handlePollEditSubmit={this.handlePollEditSubmit} />
-          )}/>
-
-
-
-          <Match exactly pattern="/:permalink" component={ props => {
+          <Match exactly pattern="/polls/:permalink" render={ props => {
             const { permalink } = props.params
             const poll = polls.filter( poll => (poll.permalink === permalink))[0]
 
@@ -169,19 +169,77 @@ class App extends React.Component {
             )
           } }/>
 
-          <Match pattern="/:permalink/results" component={ props => {
+          <Match pattern="/polls/results/:permalink" render={ props => {
             const { permalink } = props.params
             const poll = polls.filter( poll => (poll.permalink === permalink))[0]
 
             return (
-              poll.choiceSubmitted ? (
-                <PollResults poll={poll} />
+              poll && poll.choiceSubmitted ? (
+                <div>
+                  <PollResults poll={poll} />
+                </div>
               ) : (
-                <Redirect to={`/${permalink}`} />
+                <Redirect to={`/polls/${permalink}`} />
               )
             )
           } }/>
-          
+
+
+          <Match exactly pattern="/mypolls" render={ props => {
+            const myPolls = polls.filter( poll => poll.myPoll )
+            console.log(myPolls)
+
+            return (
+              <PollList polls={myPolls} handlePollDelete={this.handlePollDelete} />
+            )
+          }} />
+
+          <Match exactly pattern="/mypolls/results" render={ props => {
+            const myPolls = polls.filter( poll => poll.myPoll )
+
+            return(
+              <div>
+                {
+                  myPolls.length > 0 ? (
+                    myPolls.map( (poll, index) => (
+                      <PollResults poll={poll} key={`mypoll-result-${index}`} />
+                    ))
+                  ) : (
+                    <Redirect to="/mypolls" />
+                  )
+                }
+              </div>
+            )
+          } }/>
+
+          <Match pattern="/mypolls/results/:permalink" render={ props => {
+            const { permalink } = props.params
+            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+
+            return (
+              poll && poll.myPoll ? (
+                <div>
+                  <PollResults poll={poll} />
+                </div>
+              ) : (
+                <Redirect to="/mypolls" />
+              )
+            )
+          } }/>
+
+          <Match pattern="/mypolls/edit/:permalink" render={ props => {
+            const { permalink } = props.params
+            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+
+            return (
+              poll && poll.myPoll ? (
+                <PollEdit {...{poll}} handlePollEditSubmit={this.handlePollEditSubmit} />
+              ) : (
+                <Redirect to="/mypolls" />
+              )
+            )
+          }}/>
+
         </div>
       </div>
     )

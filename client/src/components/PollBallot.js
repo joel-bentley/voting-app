@@ -31,7 +31,7 @@ class PollBallot extends React.Component {
     const { handleVoteSubmit, poll } = this.props
     const { selectedItem } = this.state
 
-    if (!poll.choiceSubmitted && selectedItem) {
+    if (!poll.choiceSubmitted && selectedItem !== null) {
 
       this.setState({ isSubmitting: true })
       handleVoteSubmit(selectedItem)
@@ -74,11 +74,11 @@ class PollBallot extends React.Component {
         </Panel>
 
         {
-          poll.choiceSubmitted ? (
+          poll.choiceSubmitted !== null ? (
             <div>
               <Button bsStyle="success" disabled={true}> Thank you for voting! <Glyphicon glyph="glyphicon-ok" /> </Button>
               &nbsp;&nbsp;&nbsp;
-              <Link to={`/${poll.permalink}/results`}>View Results</Link>
+              <Link to={`/polls/results/${poll.permalink}`}>View Results</Link>
             </div>
           ) : (
 
