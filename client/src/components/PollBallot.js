@@ -34,11 +34,11 @@ class PollBallot extends React.Component {
     if (!poll.choiceSubmitted && selectedItem !== null) {
 
       this.setState({ isSubmitting: true })
-      handleVoteSubmit(selectedItem)
+      handleVoteSubmit(poll.permalink, selectedItem)
 
-      setTimeout(() => {
-        this.setState({isSubmitting: false})
-      }, 2000)
+      // setTimeout(() => {
+      //   this.setState({isSubmitting: false})
+      // }, 2000)
     }
   }
 

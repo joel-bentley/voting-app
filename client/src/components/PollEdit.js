@@ -4,17 +4,19 @@ import {
     Glyphicon,
     ListGroup,
     ListGroupItem,
+    Modal,
     Panel
   } from 'react-bootstrap'
 
 import ControlledInput from './ControlledInput'
 
+
 class PollEdit extends React.Component {
   state = {
     polltitle: null,
     pollChoices: [],
-    isSubmitting: false,
     titleInputValue: '',
+    showModal: false
   }
 
   componentWillMount() {
@@ -61,21 +63,26 @@ class PollEdit extends React.Component {
     }
   }
 
+/////////
   handlePollSubmitClick = () => {
-    const { handlePollEditSubmit } = this.props
+    const { poll, router, handlePollEditSubmit } = this.props
     const { pollTitle, pollChoices } = this.state
 
-    this.setState({ isSubmitting: true })
-
-    handlePollEditSubmit(pollTitle, pollChoices)
-
-    setTimeout(() => {
-      this.setState({ isSubmitting: false })
-    }, 2000)
+    handlePollEditSubmit(poll.permalink, pollTitle, pollChoices)
+    router.transitionTo('/mypolls')
   }
 
+  handlePollDeleteConfirm = () => {
+    const { poll, router, handlePollDelete } = this.props
+
+    this.setState({ showModal: false })
+    handlePollDelete(poll.permalink)
+    router.transitionTo('/mypolls')
+  }
+  /////////////////
+
   render() {
-    const { pollTitle, pollChoices, isSubmitting } = this.state
+    const { pollTitle, pollChoices } = this.state
 
     const panelHeader = pollTitle ? (
       <div>
@@ -90,7 +97,7 @@ class PollEdit extends React.Component {
         placeholder="Enter poll question here"
         onSubmit={this.handleTitleSubmitClick}
         inputValue={this.state.titleInputValue}
-        buttonText="Submit"
+        buttonText="Submit poll question"
       />
     )
 
@@ -114,20 +121,43 @@ class PollEdit extends React.Component {
         <ControlledInput
           placeholder="Enter new poll answer here"
           onSubmit={this.handleChoiceSubmitClick}
-          buttonText="Submit"
+          buttonText="Submit choice"
         />
 
         <br />
 
-        <Button bsStyle="primary" disabled={isSubmitting} onClick={this.handlePollSubmitClick}>
-          {
-            isSubmitting ? (
-              <span>Submitting poll...</span>
-            ) : (
-              <span>Submit this poll</span>
-            )
-          }
+        <Button bsStyle="primary" onClick={() => this.handlePollSubmitClick()}>
+          Submit this poll
         </Button>
+        <span style={{float: 'right'}}>
+          <Button bsStyle="danger" onClick={() => this.setState({ showModal: true })}>
+            <Glyphicon glyph="remove" title="Click here to remove this poll" />
+            <span>Delete poll</span>
+          </Button>
+        </span>
+
+        <Modal
+          show={this.state.showModal}
+          onHide={() => this.setState({ showModal: false })} >
+
+          <Modal.Header>
+            <Modal.Title>Confirm Poll Deletion</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            Are you sure you want to delete this poll?
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button onClick={() => this.setState({ showModal: false })}>
+              Cancel
+            </Button>
+            <Button bsStyle="danger" onClick={this.handlePollDeleteConfirm}>
+              Permanently delete this poll
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
       </div>
     )
   }

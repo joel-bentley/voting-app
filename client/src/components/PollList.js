@@ -1,21 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router'
-import { Button, Glyphicon, ListGroup, ListGroupItem, Modal} from 'react-bootstrap'
+import { Button, Glyphicon, ListGroup, ListGroupItem } from 'react-bootstrap'
 
 import './PollList.css'
 
-const handleEditIconClick = () => {
-  //`/mypolls/edit/${permalink}`
-  console.log('handleEditIconClick')
-}
 
-const handleDeleteIconClick = () => {
-  console.log('handleDeleteIconClick')
-}
-
-// Make PollList into
-
-const PollList = ({ polls, handlePollDelete }) => (
+const PollList = ({ polls }) => (
   <ListGroup>
     {
       polls.map((poll, index) => {
@@ -34,19 +24,17 @@ const PollList = ({ polls, handlePollDelete }) => (
             {
               poll.myPoll ? (
                 <span className="poll-edit-buttons">
-                  <Button bsStyle="warning" onClick={() => handleEditIconClick(poll.permalink)}>
-                    <Glyphicon glyph="pencil" title="Click here to edit this poll"  />
-                  </Button>
-                  &nbsp;&nbsp;&nbsp;
-                  <Button bsStyle="danger" onClick={() => handleDeleteIconClick(poll.permalink)}>
-                    <Glyphicon glyph="remove" title="Click here to remove this poll" />
-                  </Button>
+                  <Link to={`/mypolls/edit/${poll.permalink}`}>{({ onClick }) => (
+                      <Button bsStyle="warning" className="poll-edit-btn" onClick={onClick}>
+                        <Glyphicon glyph="pencil" title="Click here to edit this poll"  />
+                      </Button>
+                    )}
+                  </Link>
                 </span>
               ) : (
                 <div style={{ height: '27px' }}></div>
               )
             }
-
           </div>
         )
       })
