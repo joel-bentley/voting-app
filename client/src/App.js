@@ -235,13 +235,12 @@ class App extends React.Component {
             const poll = polls.filter( poll => (poll.permalink === permalink))[0]
 
             return (
-              poll && poll.choiceSubmitted ? (
+              poll && (poll.choiceSubmitted !== null) ? (
                 <div>
                   <PollResults poll={poll} />
                 </div>
               ) : (
                 <div>
-                {console.log('Redirect to polls/permalink')}///////////////////
                 <Redirect to={`/polls/${permalink}`} />
                 </div>
               )
