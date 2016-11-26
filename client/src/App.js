@@ -16,6 +16,9 @@ import PollEdit from './components/PollEdit'
 
 import './App.css'
 
+const PERMALINK_LENGTH = 5
+const PERMALINK_CHAR = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789'
+
 // const API = '/api'
 // const getProfile = () => axios.get(`${API}/profile`)
 // const getClicks = () => axios.get(`${API}/clicks`)
@@ -80,6 +83,12 @@ const pollData = [
 ]
 /////////////////////////////////////////
 
+const generatePermalink = (length, characters) => {
+  return Array.apply(null, Array(length)).map(() => (
+    characters[Math.floor(Math.random() * characters.length)]
+  ))
+}
+
 
 class App extends React.Component {
   state = {
@@ -131,6 +140,7 @@ class App extends React.Component {
       let newPolls = JSON.parse(JSON.stringify(polls))
 
       newPolls[pollIndex].choiceSubmitted = choiceSubmitted
+      newPolls[pollIndex].choices[choiceSubmitted].votes++
 
       this.setState({ polls: newPolls })
     }
@@ -162,7 +172,12 @@ class App extends React.Component {
     const { polls } = this.state
     const { router } = this.props
 
-    const permalink = 'aaaaaa'
+    var permalink
+    const permalinkEqualTest = poll => (poll.permalink === permalink)
+
+    do {
+      permalink = generatePermalink(PERMALINK_LENGTH, PERMALINK_CHAR)
+    } while (polls.filter(permalinkEqualTest).length)
 
     const newPolls = JSON.parse(JSON.stringify(polls))
                             .concat([{
@@ -225,7 +240,10 @@ class App extends React.Component {
                   <PollResults poll={poll} />
                 </div>
               ) : (
+                <div>
+                {console.log('Redirect to polls/permalink')}///////////////////
                 <Redirect to={`/polls/${permalink}`} />
+                </div>
               )
             )
           } }/>

@@ -6,12 +6,15 @@ import './PollBallot.css'
 
 class PollBallot extends React.Component {
   state = {
+    poll: {},
     selectedItem: null,
     isSubmitting: false
   }
 
   componentWillMount() {
     const { poll } = this.props
+
+    this.setState({ poll })
 
     if (poll.choiceSubmitted) {
       this.setState({
@@ -21,19 +24,25 @@ class PollBallot extends React.Component {
   }
 
   handleOptionClick = index => {
-    const { poll } = this.props
+    const { poll } = this.state
     if (!poll.choiceSubmitted) {
       this.setState({ selectedItem: index})
     }
   }
 
   handleSubmitClick = () => {
-    const { handleVoteSubmit, poll } = this.props
-    const { selectedItem } = this.state
+    const { handleVoteSubmit } = this.props
+    const { poll, selectedItem } = this.state
 
     if (!poll.choiceSubmitted && selectedItem !== null) {
 
-      this.setState({ isSubmitting: true })
+      let newPoll = JSON.parse(JSON.stringify(poll))
+      newPoll.choiceSubmitted = selectedItem
+
+      this.setState({
+        isSubmitting: true,
+        poll: newPoll
+      })
       handleVoteSubmit(poll.permalink, selectedItem)
 
       // setTimeout(() => {
@@ -43,8 +52,7 @@ class PollBallot extends React.Component {
   }
 
   render() {
-    const { poll } = this.props
-    const { selectedItem, isSubmitting } = this.state
+    const { poll, selectedItem, isSubmitting } = this.state
     const twitterHref = 'http://twitter.com/share?text=' +
                         `${poll.title}${'%0A'}Vote here: ` +
                         `&url=${window.location.href}`

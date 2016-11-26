@@ -44,6 +44,7 @@ class PollEdit extends React.Component {
     const { pollChoices } = this.state
     const newChoiceList = JSON.parse(JSON.stringify(pollChoices))
                             .filter((element, index) => (index !== choiceIndex))
+                            .map(choice => { choice.votes = 0; return choice })
     this.setState({ pollChoices: newChoiceList })
   }
 
