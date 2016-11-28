@@ -156,6 +156,7 @@ class App extends React.Component {
 
       newPolls[pollIndex].title = pollTitle
       newPolls[pollIndex].choices = pollChoices
+      newPolls[pollIndex].choiceSubmitted = null
 
       this.setState({ polls: newPolls })
     }
