@@ -16,7 +16,7 @@ class PollBallot extends React.Component {
 
     this.setState({ poll })
 
-    if (poll.choiceSubmitted) {
+    if (poll.choiceSubmitted !== null) {
       this.setState({
         selectedItem: poll.choiceSubmitted
       })
@@ -25,7 +25,7 @@ class PollBallot extends React.Component {
 
   handleOptionClick = index => {
     const { poll } = this.state
-    if (!poll.choiceSubmitted) {
+    if (poll.choiceSubmitted === null) {
       this.setState({ selectedItem: index})
     }
   }
@@ -34,7 +34,7 @@ class PollBallot extends React.Component {
     const { handleVoteSubmit } = this.props
     const { poll, selectedItem } = this.state
 
-    if (!poll.choiceSubmitted && selectedItem !== null) {
+    if (poll.choiceSubmitted === null && selectedItem !== null) {
 
       let newPoll = JSON.parse(JSON.stringify(poll))
       newPoll.choiceSubmitted = selectedItem
@@ -70,10 +70,10 @@ class PollBallot extends React.Component {
           <ListGroup fill>
             {
               poll.choices.map((choice, index) => {
-                const choiceSubmitted = index === selectedItem
+                const isSubmitted = (index === selectedItem)
                 return (
                   <ListGroupItem onClick={() => this.handleOptionClick(index)} key={`choice-${index}`}>
-                    <Radio checked={choiceSubmitted} readOnly={choiceSubmitted}> {choice.text} </Radio>
+                    <Radio checked={isSubmitted} readOnly={isSubmitted}> {choice.text} </Radio>
                   </ListGroupItem>
                 )
               })
