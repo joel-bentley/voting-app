@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link, Match, Redirect } from 'react-router'
+import { Button } from 'react-bootstrap'
 // import MatchWhenAuthorized from './components/MatchWhenAuthorized'
 //import axios from 'axios'
 
@@ -86,7 +87,7 @@ const pollData = [
 const generatePermalink = (length, characters) => {
   return Array.apply(null, Array(length)).map(() => (
     characters[Math.floor(Math.random() * characters.length)]
-  ))
+  )).join('')
 }
 
 
@@ -252,7 +253,13 @@ class App extends React.Component {
             const myPolls = polls.filter( poll => poll.myPoll )
 
             return (
-              <PollList polls={myPolls} />
+              <div>
+                <Button onClick={this.handleCreateNewPoll}>
+                  Create new poll
+                </Button>
+                <div style={{ height: '27px' }}></div>
+                <PollList polls={myPolls} />
+              </div>
             )
           }} />
 

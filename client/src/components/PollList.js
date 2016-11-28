@@ -9,7 +9,12 @@ const PollList = ({ polls }) => (
   <ListGroup>
     {
       polls.map((poll, index) => {
-        const voteCount = poll.choices.map( choice => choice.votes).reduce((a, b) => (a + b))
+
+        const voteCount = poll.choices.length ? (
+          poll.choices.map( choice => choice.votes).reduce((a, b) => (a + b))
+        ) : (
+          0
+        )
 
         return (
           <div key={`poll-${index}`}>
