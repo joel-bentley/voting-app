@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var chalk = require('chalk');
 var dotenv = require('dotenv');
 var path = require('path');
-//var mongoose = require('mongoose');
+var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 
 // Load environment variables from .env file.
@@ -24,16 +24,16 @@ var pollController = require('./controllers/poll');
 // Create Express server.
 var app = express();
 
-//// Connect to MongoDB.
-// mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
-// mongoose.connection.on('connected', function() {
-// 	console.log('%s MongoDB connection established!', chalk.green('✓'));
-// });
-// mongoose.connection.on('error', function() {
-// 	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-// 	process.exit();
-// });
-// mongoose.Promise = global.Promise;
+// Connect to MongoDB.
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
+mongoose.connection.on('connected', function() {
+	console.log('%s MongoDB connection established!', chalk.green('✓'));
+});
+mongoose.connection.on('error', function() {
+	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+	process.exit();
+});
+mongoose.Promise = global.Promise;
 
 // Express configuration.
 app.set('port', process.env.PORT || 3000);
@@ -68,27 +68,35 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Primary app routes.
-app.get(['/', '/profile', '/login'], routeController.index);
+app.get(['/', '/login', '/mypolls', '/mypolls/results', '/mypolls/new'],
+	routeController.index);
 
 // OAuth authentication routes.
 app.post('/auth/github', userController.authGithub);
 app.get('/auth/github/callback', userController.authGithubCallback);
 
 // API routes.
-app.get('/api/profile', userController.ensureAuthenticated, function(req, res) {
-	res.json(req.user.github);
+app.get('/api/profile', function(req, res) {
+
+  if (req.isAuthenticated() && req.user) {
+		res.json(req.user.github);
+	} else {
+		res.json(
+			{
+					userId: '',
+					username: '',
+					displayName: '',
+					avatar: ''
+			}
+		)
+	}
 });
 
 app.get('/api/polls', pollController.getPolls);
 app.post('/api/poll', pollController.postPollVote);
 
-// app.post('/api/poll/update', userController.ensureAuthenticated, pollController.postPollUpdate);
-// app.delete('/api/poll/update', userController.ensureAuthenticated, pollController.deletePoll);
-//
-app.post('/api/poll/update', pollController.postPollUpdate);
-app.delete('/api/poll/update', pollController.deletePoll);
-
-
+app.post('/api/poll/update', userController.ensureAuthenticated, pollController.postPollUpdate);
+app.delete('/api/poll/update', userController.ensureAuthenticated, pollController.deletePoll);
 
 
 // Production error handler

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, Match, Redirect } from 'react-router'
 import { Button } from 'react-bootstrap'
-//import MatchWhenAuthorized from './components/MatchWhenAuthorized'
+import MatchWhenAuthorized from './components/MatchWhenAuthorized'
 import axios from 'axios'
 
 import { githubLogin, logout } from './utils/oauth';
@@ -49,35 +49,39 @@ class App extends React.Component {
       polls: []
   }
 
-  componentDidMount() {
-    getPolls()
+  getData = () => {
+    return axios.all([ getProfile(), getPolls() ])
       .then(res => {
-        const polls = res.data
-        return this.setState({ polls })
+        const { userId, username, displayName, avatar } = res[0].data
+        const polls = res[1].data
+
+        console.dir({polls})
+
+        this.setState({ userId, username, displayName, avatar, polls })
       })
       .catch(err => console.log('error:', err))
   }
 
+  componentDidMount() {
+    this.getData()
+  }
+
   handleLogin = () => {
     return githubLogin()
-      .then( getProfile )
-      .then( res => {
-        const { userId, username, displayName, avatar } = res.data
-        return this.setState({ userId, username, displayName, avatar })
-      })
-      .catch(err => console.log('error:', err))
+      .then( this.getData )
   }
 
   handleLogout = () => {
     return logout()
       .then( () => {
-        return this.setState({
+        this.setState({
           userId: '',
           username: '',
           displayName: '',
           avatar: ''
         })
-      }).catch(err => console.log('error:', err))
+      })
+      .catch(err => console.log('error:', err))
   }
 
   handleVoteSubmit = (pollId, choiceSubmitted) => {
@@ -193,7 +197,7 @@ class App extends React.Component {
           } }/>
 
 
-          <Match exactly pattern="/mypolls" render={ props => {
+          <MatchWhenAuthorized exactly pattern="/mypolls" isAuthenticated={isAuthenticated} render={ props => {
             const myPolls = polls.filter( poll => poll.myPoll )
 
             return (
@@ -210,7 +214,7 @@ class App extends React.Component {
             )
           }} />
 
-          <Match exactly pattern="/mypolls/results" render={ props => {
+          <MatchWhenAuthorized exactly pattern="/mypolls/results" isAuthenticated={isAuthenticated} render={ props => {
             const myPolls = polls.filter( poll => poll.myPoll )
 
             return(
@@ -228,7 +232,7 @@ class App extends React.Component {
             )
           } }/>
 
-          <Match pattern="/mypolls/results/:pollId" render={ props => {
+          <MatchWhenAuthorized pattern="/mypolls/results/:pollId" isAuthenticated={isAuthenticated} render={ props => {
             const { pollId } = props.params
             const poll = polls.filter( poll => (poll.pollId === pollId))[0]
 
@@ -243,7 +247,7 @@ class App extends React.Component {
             )
           } }/>
 
-          <Match pattern="/mypolls/edit/:pollId" render={ props => {
+          <MatchWhenAuthorized pattern="/mypolls/edit/:pollId" isAuthenticated={isAuthenticated} render={ props => {
             const { pollId } = props.params
             const poll = polls.filter( poll => (poll.pollId === pollId))[0]
 
@@ -256,7 +260,7 @@ class App extends React.Component {
             )
           }}/>
 
-          <Match pattern="/mypolls/new" render={ props => {
+          <MatchWhenAuthorized pattern="/mypolls/new" isAuthenticated={isAuthenticated} render={ props => {
             let pollId
             const pollIdEqualTest = poll => (poll.pollId === pollId)
 

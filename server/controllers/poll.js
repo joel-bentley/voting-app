@@ -3,6 +3,7 @@ var User = require('../models/User.js');
 var polls = [
   {
     pollId: 'bCvQ1',
+    creatorId: '583dc2d1b4f828cc99787a10',
     title: 'What is your opinion on poll 1?',
     choices: [
       {
@@ -16,10 +17,15 @@ var polls = [
         votes: 10
       }
     ],
-    choiceSubmitted: null,
-    myPoll: true
+    votingRecord: [
+      {
+        userId: '583dc2d1b4f828cc99787a10',
+        choice: 2
+      }
+    ],
   }, {
     pollId: 'bCvQ2',
+    creatorId: '683dc2d1b4f828cc99787a10',
     title: 'What is your opinion on poll 2?',
     choices: [
       {
@@ -33,10 +39,15 @@ var polls = [
         votes: 1
       }
     ],
-    choiceSubmitted: 1,
-    myPoll: true
+    votingRecord: [
+      {
+        userId: '583dc2d1b4f828cc99787a10',
+        choice: 1
+      }
+    ],
   }, {
     pollId: 'bCvQ3',
+    creatorId: '583dc2d1b4f828cc99787a10',
     title: 'What is your opinion on poll 3?',
     choices: [
       {
@@ -50,18 +61,54 @@ var polls = [
         votes: 0
       }
     ],
-    choiceSubmitted: null,
-    myPoll: false
+    votingRecord: [
+      {}
+    ],
   }
 ]
 
 
 exports.getPolls = function(req, res) {
-	if (req.isAuthenticated() && req.user) {
+	var pollData;
 
+	if (req.isAuthenticated() && req.user) {
+		let userId = req.user._id.toString();
+
+    pollData = polls.map(poll => {
+      const userVote = poll.votingRecord
+                        .filter(vote => (vote.userId === userId));
+
+      const choiceSubmitted = userVote.length ? userVote[0].choice : null;
+
+      const myPoll = poll.creatorId === userId;
+
+      return (
+        {
+          pollId: poll.pollId,
+          title: poll.title,
+          choices: poll.choices,
+          choiceSubmitted: choiceSubmitted,
+          myPoll: myPoll
+        }
+      )
+    });
+
+	} else {
+
+    pollData = polls.map(poll => (
+      {
+        pollId: poll.pollId,
+        title: poll.title,
+        choices: poll.choices,
+        choiceSubmitted: null,
+        myPoll: false
+      }
+    ));
 	}
-	res.json(polls);
+
+	res.json(pollData);
 };
+
 
 exports.postPollVote = function(req, res) {
 	var { pollId, choice } = req.body;
@@ -70,8 +117,24 @@ exports.postPollVote = function(req, res) {
 
 	if (pollIndex !== -1) {
 
-		polls[pollIndex].choiceSubmitted = choice
-		polls[pollIndex].choices[choice].votes++
+    if (req.isAuthenticated() && req.user) {
+      const userId = req.user._id.toString();
+      const userVote = polls[pollIndex].votingRecord
+                        .filter(vote => (vote.userId === userId));
+      if (userVote.length === 0) {
+        polls[pollIndex].votingRecord = polls[pollIndex].votingRecord.concat([
+          {
+            userId: userId,
+            choice: choice
+          }
+        ]);
+
+        polls[pollIndex].choices[choice].votes++
+      }
+    } else {
+
+      polls[pollIndex].choices[choice].votes++
+    }
 
 		res.sendStatus(200);
 	} else {
@@ -80,77 +143,39 @@ exports.postPollVote = function(req, res) {
 	}
 };
 
+
 exports.postPollUpdate = function(req, res) {
-	var { pollId, title, choices } = req.body;
+	const { pollId, title, choices } = req.body;
+	const userId = req.user._id.toString();
 
 	var pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
 
 	if (pollIndex !== -1) {
 
-		polls[pollIndex].title = title
-		polls[pollIndex].choices = choices
-		polls[pollIndex].choiceSubmitted = null
+    if (polls[pollIndex].creatorId === userId) {
+      polls[pollIndex].title = title;
+      polls[pollIndex].choices = choices;
+      polls[pollIndex].votingRecord = [];
+    }
 
 		res.sendStatus(200);
+
 	} else {
 		polls = polls.concat([{
 										pollId: pollId,
+                    creatorId: userId,
 										title: title,
 										choices: choices,
-										choiceSubmitted: null,
-										myPoll: true
+										votingRecord: []
 									}]);
 
 		res.sendStatus(201);
 	}
 };
 
+
 exports.deletePoll = function(req, res) {
 	var { pollId } = req.body;
 	polls = polls.filter(poll => (poll.pollId !== pollId))
 	res.sendStatus(200);
 };
-
-// exports.getClicks = function(req, res) {
-// 	User.findOne({
-// 		'github.id': req.user.github.id
-// 	}, {
-// 		'_id': false
-// 	}).exec(function(err, result) {
-// 		if (err) {
-// 			throw err;
-// 		}
-//
-// 		res.json(result.nbrClicks);
-// 	});
-// };
-//
-// exports.addClick = function(req, res) {
-// 	User.findOneAndUpdate({
-// 		'github.id': req.user.github.id
-// 	}, {
-// 		$inc: {
-// 			'nbrClicks.clicks': 1
-// 		}
-// 	}).exec(function(err, result) {
-// 		if (err) {
-// 			throw err;
-// 		}
-//
-// 		res.sendStatus(200);
-// 	});
-// };
-//
-// exports.resetClicks = function(req, res) {
-// 	User.findOneAndUpdate({
-// 		'github.id': req.user.github.id
-// 	}, {
-// 		'nbrClicks.clicks': 0
-// 	}).exec(function(err, result) {
-// 		if (err) {
-// 			throw err;
-// 		}
-//
-// 		res.sendStatus(200);
-// 	});
-// };
