@@ -21,14 +21,18 @@ const NavigationBar = ({ router, isAuthenticated, displayName, avatar, handleLog
               <NavItem href={href} onClick={onClick} eventKey={1}> Home </NavItem>
             )
           }</Link>
-          <Link to="/mypolls">{({ href, onClick }) => (
-              <NavItem href={href} onClick={onClick} eventKey={2}> My Polls </NavItem>
-            )
-          }</Link>
-          <Link to="/mypolls/results">{({ href, onClick }) => (
-              <NavItem href={href} onClick={onClick} eventKey={3}> My Poll Results </NavItem>
-            )
-          }</Link>
+        {isAuthenticated && (
+            <Link to="/mypolls">{({ href, onClick }) => (
+                <NavItem href={href} onClick={onClick} eventKey={2}> My Polls </NavItem>
+              )
+            }</Link>
+        )}
+        {isAuthenticated && (
+            <Link to="/mypolls/results">{({ href, onClick }) => (
+                <NavItem href={href} onClick={onClick} eventKey={3}> My Poll Results </NavItem>
+              )
+            }</Link>
+        )}
         </Nav>
 
         <Nav pullRight>
