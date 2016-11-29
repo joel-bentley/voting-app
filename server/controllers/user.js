@@ -52,10 +52,9 @@ exports.authGithub = function(req, res) {
 
         var newUser = new User();
 
-        newUser.github.id = profile.id;
+        newUser.github.userId = profile.id;
         newUser.github.username = profile.login;
         newUser.github.displayName = profile.name;
-        newUser.github.publicRepos = profile.public_repos;
         newUser.github.avatar = profile.avatar_url;
 
         newUser.save(function(err) {

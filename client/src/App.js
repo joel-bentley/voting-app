@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link, Match, Redirect } from 'react-router'
 import { Button } from 'react-bootstrap'
-// import MatchWhenAuthorized from './components/MatchWhenAuthorized'
-//import axios from 'axios'
+//import MatchWhenAuthorized from './components/MatchWhenAuthorized'
+import axios from 'axios'
 
 import { githubLogin, logout } from './utils/oauth';
 
@@ -17,74 +17,23 @@ import PollEdit from './components/PollEdit'
 
 import './App.css'
 
-const PERMALINK_LENGTH = 5
-const PERMALINK_CHAR = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789'
 
-// const API = '/api'
-// const getProfile = () => axios.get(`${API}/profile`)
-// const getClicks = () => axios.get(`${API}/clicks`)
-// const addClicks = () => axios.post(`${API}/clicks`)
-// const resetClicks = () => axios.delete(`${API}/clicks`)
+const POLL_ID_LENGTH = 5
+const POLL_ID_CHAR = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789'
+
+const API = '/api'
+const getProfile = () => axios.get(`${API}/profile`)
+const getPolls = () => axios.get(`${API}/polls`)
+const postPollVote = (pollId, choice) => (
+  axios.post(`${API}/poll`, { pollId, choice })
+)
+const postPollUpdate = (pollId, title, choices) => (
+  axios.post(`${API}/poll/update`, { pollId, title, choices })
+)
+const deletePoll = pollId => axios.delete(`${API}/poll/update`, { pollId })
 
 
-/////////////////////////////////////////
-const pollData = [
-  {
-    permalink: 'bCvQ1',
-    title: 'What is your opinion on poll 1?',
-    choices: [
-      {
-        text: 'Option 1',
-        votes: 1
-      }, {
-        text: 'Option 2',
-        votes: 3
-      }, {
-        text: 'Option 3',
-        votes: 10
-      }
-    ],
-    choiceSubmitted: null,
-    myPoll: true
-  }, {
-    permalink: 'bCvQ2',
-    title: 'What is your opinion on poll 2?',
-    choices: [
-      {
-        text: 'Option 1',
-        votes: 6
-      }, {
-        text: 'Option 2',
-        votes: 2
-      }, {
-        text: 'Option 3',
-        votes: 1
-      }
-    ],
-    choiceSubmitted: 1,
-    myPoll: true
-  }, {
-    permalink: 'bCvQ3',
-    title: 'What is your opinion on poll 3?',
-    choices: [
-      {
-        text: 'Option 1',
-        votes: 9
-      }, {
-        text: 'Option 2',
-        votes: 7
-      }, {
-        text: 'Option 3',
-        votes: 0
-      }
-    ],
-    choiceSubmitted: null,
-    myPoll: false
-  }
-]
-/////////////////////////////////////////
-
-const generatePermalink = (length, characters) => {
+const generateRandomId = (length, characters) => {
   return Array.apply(null, Array(length)).map(() => (
     characters[Math.floor(Math.random() * characters.length)]
   )).join('')
@@ -93,49 +42,47 @@ const generatePermalink = (length, characters) => {
 
 class App extends React.Component {
   state = {
-      id: '',
+      userId: '',
       username: '',
       displayName: '',
       avatar: '',
       polls: []
   }
 
-  getData = () => {
-    // return axios.all([ getProfile(), getClicks() ])
-    //   .then(res => {
-    //     const { id, username, displayName, publicRepos, avatar } = res[0].data
-    //     const { clicks } = res[1].data
-    //     this.setState({ id, username, displayName, publicRepos, avatar, clicks })
-    //   })
-    this.setState({ polls: pollData })
-  }
-
   componentDidMount() {
-    this.getData()
+    getPolls()
+      .then(res => {
+        const polls = res.data
+        return this.setState({ polls })
+      })
+      .catch(err => console.log('error:', err))
   }
 
   handleLogin = () => {
     return githubLogin()
-      .then( this.getData )
+      .then( getProfile )
+      .then( res => {
+        const { userId, username, displayName, avatar } = res.data
+        return this.setState({ userId, username, displayName, avatar })
+      })
       .catch(err => console.log('error:', err))
   }
 
   handleLogout = () => {
     return logout()
       .then( () => {
-        this.setState({
-          id: '',
+        return this.setState({
+          userId: '',
           username: '',
           displayName: '',
-          publicRepos: '',
           avatar: ''
         })
       }).catch(err => console.log('error:', err))
   }
 
-  handleVoteSubmit = (permalink, choiceSubmitted) => {
+  handleVoteSubmit = (pollId, choiceSubmitted) => {
     const { polls } = this.state
-    const pollIndex = polls.findIndex(poll => (poll.permalink === permalink))
+    const pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
 
     if (pollIndex !== -1) {
       let newPolls = JSON.parse(JSON.stringify(polls))
@@ -144,54 +91,50 @@ class App extends React.Component {
       newPolls[pollIndex].choices[choiceSubmitted].votes++
 
       this.setState({ polls: newPolls })
+
+      postPollVote(pollId, choiceSubmitted)
+        .catch(err => console.log('error:', err))
     }
   }
 
-  handlePollEditSubmit = (permalink, pollTitle, pollChoices) => {
+  handlePollEditSubmit = (pollId, pollTitle, pollChoices) => {
     const { polls } = this.state
-    const pollIndex = polls.findIndex(poll => (poll.permalink === permalink))
+    const pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
+    let newPolls
 
     if (pollIndex !== -1) {
-      let newPolls = JSON.parse(JSON.stringify(polls))
+      newPolls = JSON.parse(JSON.stringify(polls))
 
       newPolls[pollIndex].title = pollTitle
       newPolls[pollIndex].choices = pollChoices
       newPolls[pollIndex].choiceSubmitted = null
 
-      this.setState({ polls: newPolls })
+    } else {
+      newPolls = JSON.parse(JSON.stringify(polls))
+                              .concat([{
+                                pollId: pollId,
+                                title: pollTitle,
+                                choices: pollChoices,
+                                choiceSubmitted: null,
+                                myPoll: true
+                              }])
     }
-  }
-
-  handlePollDelete = permalink => {
-    const { polls } = this.state
-    const newPolls = JSON.parse(JSON.stringify(polls))
-                      .filter(poll => (poll.permalink !== permalink))
 
     this.setState({ polls: newPolls })
+
+    postPollUpdate(pollId, pollTitle, pollChoices)
+      .catch(err => console.log('error:', err))
   }
 
-  handleCreateNewPoll = () => {
+  handlePollDelete = pollId => {
     const { polls } = this.state
-    const { router } = this.props
-
-    var permalink
-    const permalinkEqualTest = poll => (poll.permalink === permalink)
-
-    do {
-      permalink = generatePermalink(PERMALINK_LENGTH, PERMALINK_CHAR)
-    } while (polls.filter(permalinkEqualTest).length)
-
     const newPolls = JSON.parse(JSON.stringify(polls))
-                            .concat([{
-                              permalink: permalink,
-                              title: '',
-                              choices: [],
-                              choiceSubmitted: null,
-                              myPoll: true
-                            }])
+                      .filter(poll => (poll.pollId !== pollId))
 
-    this.setState({ polls: newPolls },
-       router.transitionTo(`/mypolls/edit/${permalink}`))
+    this.setState({ polls: newPolls })
+
+    deletePoll(pollId)
+      .catch(err => console.log('error:', err))
   }
 
   render() {
@@ -216,9 +159,9 @@ class App extends React.Component {
 
 
 
-          <Match exactly pattern="/polls/:permalink" render={ props => {
-            const { permalink } = props.params
-            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+          <Match exactly pattern="/polls/:pollId" render={ props => {
+            const { pollId } = props.params
+            const poll = polls.filter( poll => (poll.pollId === pollId))[0]
 
             return (
               poll ? (
@@ -232,9 +175,9 @@ class App extends React.Component {
             )
           } }/>
 
-          <Match pattern="/polls/results/:permalink" render={ props => {
-            const { permalink } = props.params
-            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+          <Match pattern="/polls/results/:pollId" render={ props => {
+            const { pollId } = props.params
+            const poll = polls.filter( poll => (poll.pollId === pollId))[0]
 
             return (
               poll && (poll.choiceSubmitted !== null) ? (
@@ -243,7 +186,7 @@ class App extends React.Component {
                 </div>
               ) : (
                 <div>
-                <Redirect to={`/polls/${permalink}`} />
+                <Redirect to={`/polls/${pollId}`} />
                 </div>
               )
             )
@@ -255,9 +198,12 @@ class App extends React.Component {
 
             return (
               <div>
-                <Button onClick={this.handleCreateNewPoll}>
-                  Create new poll
-                </Button>
+                <Link to="/mypolls/new">{({ onClick }) => (
+                  <Button onClick={onClick}>
+                    Create new poll
+                  </Button>
+                )}</Link>
+
                 <div style={{ height: '27px' }}></div>
                 <PollList polls={myPolls} />
               </div>
@@ -282,9 +228,9 @@ class App extends React.Component {
             )
           } }/>
 
-          <Match pattern="/mypolls/results/:permalink" render={ props => {
-            const { permalink } = props.params
-            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+          <Match pattern="/mypolls/results/:pollId" render={ props => {
+            const { pollId } = props.params
+            const poll = polls.filter( poll => (poll.pollId === pollId))[0]
 
             return (
               poll && poll.myPoll ? (
@@ -297,9 +243,9 @@ class App extends React.Component {
             )
           } }/>
 
-          <Match pattern="/mypolls/edit/:permalink" render={ props => {
-            const { permalink } = props.params
-            const poll = polls.filter( poll => (poll.permalink === permalink))[0]
+          <Match pattern="/mypolls/edit/:pollId" render={ props => {
+            const { pollId } = props.params
+            const poll = polls.filter( poll => (poll.pollId === pollId))[0]
 
             return (
               poll && poll.myPoll ? (
@@ -307,6 +253,27 @@ class App extends React.Component {
               ) : (
                 <Redirect to="/mypolls" />
               )
+            )
+          }}/>
+
+          <Match pattern="/mypolls/new" render={ props => {
+            let pollId
+            const pollIdEqualTest = poll => (poll.pollId === pollId)
+
+            do {
+              pollId = generateRandomId(POLL_ID_LENGTH, POLL_ID_CHAR)
+            } while (polls.filter(pollIdEqualTest).length)
+
+            const poll = {
+              pollId: pollId,
+              title: '',
+              choices: [],
+              choiceSubmitted: null,
+              myPoll: true
+            }
+
+            return (
+              <PollEdit {...{ poll, router }} handlePollEditSubmit={this.handlePollEditSubmit} handlePollDelete={this.handlePollDelete} />
             )
           }}/>
 

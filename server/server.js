@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var chalk = require('chalk');
 var dotenv = require('dotenv');
 var path = require('path');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 
 // Load environment variables from .env file.
@@ -19,21 +19,21 @@ var User = require('./models/User');
 // Controllers (route handlers).
 var userController = require('./controllers/user');
 var routeController = require('./controllers/route');
-var clickController = require('./controllers/click');
+var pollController = require('./controllers/poll');
 
 // Create Express server.
 var app = express();
 
-// Connect to MongoDB.
-mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
-mongoose.connection.on('connected', function() {
-	console.log('%s MongoDB connection established!', chalk.green('✓'));
-});
-mongoose.connection.on('error', function() {
-	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-	process.exit();
-});
-mongoose.Promise = global.Promise;
+//// Connect to MongoDB.
+// mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
+// mongoose.connection.on('connected', function() {
+// 	console.log('%s MongoDB connection established!', chalk.green('✓'));
+// });
+// mongoose.connection.on('error', function() {
+// 	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+// 	process.exit();
+// });
+// mongoose.Promise = global.Promise;
 
 // Express configuration.
 app.set('port', process.env.PORT || 3000);
@@ -75,13 +75,21 @@ app.post('/auth/github', userController.authGithub);
 app.get('/auth/github/callback', userController.authGithubCallback);
 
 // API routes.
-app.get('/api/clicks', userController.ensureAuthenticated, clickController.getClicks);
-app.post('/api/clicks', userController.ensureAuthenticated, clickController.addClick);
-app.delete('/api/clicks', userController.ensureAuthenticated, clickController.resetClicks);
-
 app.get('/api/profile', userController.ensureAuthenticated, function(req, res) {
 	res.json(req.user.github);
 });
+
+app.get('/api/polls', pollController.getPolls);
+app.post('/api/poll', pollController.postPollVote);
+
+// app.post('/api/poll/update', userController.ensureAuthenticated, pollController.postPollUpdate);
+// app.delete('/api/poll/update', userController.ensureAuthenticated, pollController.deletePoll);
+//
+app.post('/api/poll/update', pollController.postPollUpdate);
+app.delete('/api/poll/update', pollController.deletePoll);
+
+
+
 
 // Production error handler
 if (app.get('env') === 'production') {

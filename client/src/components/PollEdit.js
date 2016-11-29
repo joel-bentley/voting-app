@@ -64,12 +64,12 @@ class PollEdit extends React.Component {
     }
   }
 
-/////////
+
   handlePollSubmitClick = () => {
     const { poll, router, handlePollEditSubmit } = this.props
     const { pollTitle, pollChoices } = this.state
 
-    handlePollEditSubmit(poll.permalink, pollTitle, pollChoices)
+    handlePollEditSubmit(poll.pollId, pollTitle, pollChoices)
     router.transitionTo('/mypolls')
   }
 
@@ -77,10 +77,10 @@ class PollEdit extends React.Component {
     const { poll, router, handlePollDelete } = this.props
 
     this.setState({ showModal: false })
-    handlePollDelete(poll.permalink)
+    handlePollDelete(poll.pollId)
     router.transitionTo('/mypolls')
   }
-  /////////////////
+
 
   render() {
     const { pollTitle, pollChoices } = this.state
@@ -127,9 +127,18 @@ class PollEdit extends React.Component {
 
         <br />
 
-        <Button bsStyle="primary" onClick={() => this.handlePollSubmitClick()}>
-          Submit this poll
-        </Button>
+      {
+        (pollTitle !== '' && pollChoices.length > 1) ? (
+          <Button bsStyle="primary" onClick={() => this.handlePollSubmitClick()}>
+            Submit this poll
+          </Button>
+        ) : (
+          <Button bsStyle="warning" disabled={true}>
+            To submit poll, first enter question and multiple answers above
+          </Button>
+        )
+      }
+
         <span style={{float: 'right'}}>
           <Button bsStyle="danger" onClick={() => this.setState({ showModal: true })}>
             <Glyphicon glyph="remove" title="Click here to remove this poll" />

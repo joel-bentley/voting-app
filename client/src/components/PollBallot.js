@@ -43,7 +43,7 @@ class PollBallot extends React.Component {
         isSubmitting: true,
         poll: newPoll
       })
-      handleVoteSubmit(poll.permalink, selectedItem)
+      handleVoteSubmit(poll.pollId, selectedItem)
 
       // setTimeout(() => {
       //   this.setState({isSubmitting: false})
@@ -86,7 +86,7 @@ class PollBallot extends React.Component {
             <div>
               <Button bsStyle="success" disabled={true}> Thank you for voting! <Glyphicon glyph="glyphicon-ok" /> </Button>
               &nbsp;&nbsp;&nbsp;
-              <Link to={`/polls/results/${poll.permalink}`}>View Results</Link>
+              <Link to={`/polls/results/${poll.pollId}`}>View Results</Link>
             </div>
           ) : (
 

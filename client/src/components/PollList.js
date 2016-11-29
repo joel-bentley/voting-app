@@ -8,7 +8,7 @@ import './PollList.css'
 const PollList = ({ polls }) => (
   <ListGroup>
     {
-      polls.map((poll, index) => {
+      polls && polls.map((poll, index) => {
 
         const voteCount = poll.choices.length ? (
           poll.choices.map( choice => choice.votes).reduce((a, b) => (a + b))
@@ -19,8 +19,8 @@ const PollList = ({ polls }) => (
         return (
           <div key={`poll-${index}`}>
 
-            <Link to={`/polls/${poll.permalink}`}>{({ onClick }) => (
-                <ListGroupItem header={poll.title} onClick={onClick}>
+            <Link to={`/polls/${poll.pollId}`}>{({ onClick }) => (
+                <ListGroupItem header={poll.title ? poll.title : '?'} onClick={onClick}>
                   Total votes: {voteCount}
                 </ListGroupItem>
               )}
@@ -29,7 +29,7 @@ const PollList = ({ polls }) => (
             {
               poll.myPoll ? (
                 <span className="poll-edit-buttons">
-                  <Link to={`/mypolls/edit/${poll.permalink}`}>{({ onClick }) => (
+                  <Link to={`/mypolls/edit/${poll.pollId}`}>{({ onClick }) => (
                       <Button bsStyle="warning" className="poll-edit-btn" onClick={onClick}>
                         <Glyphicon glyph="pencil" title="Click here to edit this poll"  />
                       </Button>
