@@ -1,181 +1,125 @@
 var User = require('../models/User.js');
-
-var polls = [
-  {
-    pollId: 'bCvQ1',
-    creatorId: '583dc2d1b4f828cc99787a10',
-    title: 'What is your opinion on poll 1?',
-    choices: [
-      {
-        text: 'Option 1',
-        votes: 1
-      }, {
-        text: 'Option 2',
-        votes: 3
-      }, {
-        text: 'Option 3',
-        votes: 10
-      }
-    ],
-    votingRecord: [
-      {
-        userId: '583dc2d1b4f828cc99787a10',
-        choice: 2
-      }
-    ],
-  }, {
-    pollId: 'bCvQ2',
-    creatorId: '683dc2d1b4f828cc99787a10',
-    title: 'What is your opinion on poll 2?',
-    choices: [
-      {
-        text: 'Option 1',
-        votes: 6
-      }, {
-        text: 'Option 2',
-        votes: 2
-      }, {
-        text: 'Option 3',
-        votes: 1
-      }
-    ],
-    votingRecord: [
-      {
-        userId: '583dc2d1b4f828cc99787a10',
-        choice: 1
-      }
-    ],
-  }, {
-    pollId: 'bCvQ3',
-    creatorId: '583dc2d1b4f828cc99787a10',
-    title: 'What is your opinion on poll 3?',
-    choices: [
-      {
-        text: 'Option 1',
-        votes: 9
-      }, {
-        text: 'Option 2',
-        votes: 7
-      }, {
-        text: 'Option 3',
-        votes: 0
-      }
-    ],
-    votingRecord: [
-      {}
-    ],
-  }
-]
+var Poll = require('../models/Poll.js');
 
 
 exports.getPolls = function(req, res) {
 	var pollData;
 
-	if (req.isAuthenticated() && req.user) {
-		let userId = req.user._id.toString();
+  Poll.find(function (err, polls) {
+    if (err) return console.error(err);
 
-    pollData = polls.map(poll => {
-      const userVote = poll.votingRecord
-                        .filter(vote => (vote.userId === userId));
+    if (req.isAuthenticated() && req.user) {
+      var userId = req.user._id.toString();
 
-      const choiceSubmitted = userVote.length ? userVote[0].choice : null;
+      pollData = polls.map(poll => {
+        var userVote = poll.votingRecord
+                          .filter(vote => (vote.userId === userId));
 
-      const myPoll = poll.creatorId === userId;
+        var choiceSubmitted = userVote.length ? userVote[0].choice : null;
 
-      return (
+        var myPoll = poll.creatorId === userId;
+
+        return (
+          {
+            pollId: poll.pollId,
+            title: poll.title,
+            choices: poll.choices,
+            choiceSubmitted: choiceSubmitted,
+            myPoll: myPoll
+          }
+        )
+      });
+
+    } else {
+
+      pollData = polls.map(poll => (
         {
           pollId: poll.pollId,
           title: poll.title,
           choices: poll.choices,
-          choiceSubmitted: choiceSubmitted,
-          myPoll: myPoll
+          choiceSubmitted: null,
+          myPoll: false
         }
-      )
-    });
+      ));
+    }
 
-	} else {
-
-    pollData = polls.map(poll => (
-      {
-        pollId: poll.pollId,
-        title: poll.title,
-        choices: poll.choices,
-        choiceSubmitted: null,
-        myPoll: false
-      }
-    ));
-	}
-
-	res.json(pollData);
+    res.json(pollData);
+  });
 };
 
 
 exports.postPollVote = function(req, res) {
 	var { pollId, choice } = req.body;
 
-	var pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
+  var incObject = {};
+  incObject['choices.' + choice + '.votes'] = 1;
 
-	if (pollIndex !== -1) {
+  if (req.isAuthenticated() && req.user) {
+    var userId = req.user._id.toString();
 
-    if (req.isAuthenticated() && req.user) {
-      const userId = req.user._id.toString();
-      const userVote = polls[pollIndex].votingRecord
-                        .filter(vote => (vote.userId === userId));
-      if (userVote.length === 0) {
-        polls[pollIndex].votingRecord = polls[pollIndex].votingRecord.concat([
-          {
-            userId: userId,
-            choice: choice
-          }
-        ]);
-
-        polls[pollIndex].choices[choice].votes++
+    Poll.findOneAndUpdate({
+  		'pollId': pollId
+  	}, {
+  		$inc: incObject,
+      $addToSet: {
+        votingRecord: {
+          userId: userId,
+          choice: choice
+        }
       }
-    } else {
+  	}).exec(function(err, result) {
+      if (err) return console.error(err);
 
-      polls[pollIndex].choices[choice].votes++
-    }
+  		res.sendStatus(200);
+  	});
 
-		res.sendStatus(200);
-	} else {
+  } else {
 
-		res.sendStatus(404).send({ error: 'Poll not found' });
-	}
+    Poll.findOneAndUpdate({
+      'pollId': pollId
+    }, {
+      $inc: incObject
+    }).exec(function(err, result) {
+      if (err) return console.error(err);
+
+      res.sendStatus(200);
+    });
+  }
 };
 
 
 exports.postPollUpdate = function(req, res) {
-	const { pollId, title, choices } = req.body;
-	const userId = req.user._id.toString();
+	var { pollId, title, choices } = req.body;
+	var userId = req.user._id.toString();
 
-	var pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
-
-	if (pollIndex !== -1) {
-
-    if (polls[pollIndex].creatorId === userId) {
-      polls[pollIndex].title = title;
-      polls[pollIndex].choices = choices;
-      polls[pollIndex].votingRecord = [];
+  Poll.findOneAndUpdate({
+    'pollId': pollId
+  }, {
+    $set: {
+      pollId: pollId,
+      creatorId: userId,
+			title: title,
+			choices: choices,
+			votingRecord: []
     }
+  }, {
+    upsert: true
+  }).exec(function(err, result) {
+    if (err) return console.error(err);
 
-		res.sendStatus(200);
-
-	} else {
-		polls = polls.concat([{
-										pollId: pollId,
-                    creatorId: userId,
-										title: title,
-										choices: choices,
-										votingRecord: []
-									}]);
-
-		res.sendStatus(201);
-	}
+    res.sendStatus(200);
+  });
 };
 
 
 exports.deletePoll = function(req, res) {
 	var { pollId } = req.body;
-	polls = polls.filter(poll => (poll.pollId !== pollId))
-	res.sendStatus(200);
+
+  Polls.findOneAndRemove({
+    'pollId': pollId
+  }).exec(function(err, result) {
+    if (err) return console.error(err);
+
+    res.sendStatus(200);
+  });
 };
