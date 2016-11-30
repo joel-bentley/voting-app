@@ -1,6 +1,8 @@
 # voting-app
 Built for Voting App challenge on Free Code Camp. This project builds off my custom boilerplate project, fcc-starter.
 
+**Live Demo:** https://joel-bentley-voting-app.herokuapp.com/
+
 User story requirements for this project: (<https://www.freecodecamp.com/challenges/build-a-voting-app>)
 
 1. As an authenticated user, I can keep my polls and come back later to access them.
