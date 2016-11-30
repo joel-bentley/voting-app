@@ -54,8 +54,7 @@ class App extends React.Component {
       .then(res => {
         const { userId, username, displayName, avatar } = res[0].data
         const polls = res[1].data
-
-        console.dir({polls})
+        // console.dir({polls})
 
         this.setState({ userId, username, displayName, avatar, polls })
       })
@@ -81,6 +80,7 @@ class App extends React.Component {
           avatar: ''
         })
       })
+      .then( this.getData )
       .catch(err => console.log('error:', err))
   }
 
@@ -106,7 +106,8 @@ class App extends React.Component {
     const pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
     let newPolls
 
-    pollChoices.forEach(choice => {choice.votes = 0})
+    // Set vote counts to zero after editing poll (?)
+    // pollChoices.forEach(choice => {choice.votes = 0})
 
     if (pollIndex !== -1) {
       newPolls = JSON.parse(JSON.stringify(polls))

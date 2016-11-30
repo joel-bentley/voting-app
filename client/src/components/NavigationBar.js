@@ -9,7 +9,7 @@ const NavigationBar = ({ router, isAuthenticated, displayName, avatar, handleLog
       <Navbar.Header>
         <Navbar.Brand>
           <Link to="/">
-            <Glyphicon glyph="fire" aria-hidden="true" />
+            <Glyphicon glyph="check" aria-hidden="true" />
             Voting App
           </Link>
         </Navbar.Brand>

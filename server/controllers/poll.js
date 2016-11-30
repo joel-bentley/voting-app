@@ -52,7 +52,7 @@ exports.postPollVote = function(req, res) {
 	var { pollId, choice } = req.body;
 
   var incObject = {};
-  incObject['choices.' + choice + '.votes'] = 1;
+  incObject['choices.' + choice + '.votes'] = 1;  // {'choices.<index>.votes': 1}
 
   if (req.isAuthenticated() && req.user) {
     var userId = req.user._id.toString();
