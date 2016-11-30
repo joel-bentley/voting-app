@@ -73,8 +73,11 @@ class App extends React.Component {
   handleLogout = () => {
     return logout()
       .then( () => {
-        const newPolls = JSON.parse(JSON.stringify(this.state.polls))
-                          .forEach(poll => { poll.myPoll = false })
+        let newPolls = JSON.parse(JSON.stringify(this.state.polls))
+                        .map(poll => { poll.myPoll = false; return poll })
+
+
+
         this.setState({
           userId: '',
           username: '',
