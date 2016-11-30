@@ -106,6 +106,8 @@ class App extends React.Component {
     const pollIndex = polls.findIndex(poll => (poll.pollId === pollId))
     let newPolls
 
+    pollChoices.forEach(choice => {choice.votes = 0})
+
     if (pollIndex !== -1) {
       newPolls = JSON.parse(JSON.stringify(polls))
 
