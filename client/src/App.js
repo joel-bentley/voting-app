@@ -73,14 +73,17 @@ class App extends React.Component {
   handleLogout = () => {
     return logout()
       .then( () => {
+        const newPolls = JSON.parse(JSON.stringify(this.state.polls))
+                          .forEach(poll => { poll.myPoll = false })
         this.setState({
           userId: '',
           username: '',
           displayName: '',
-          avatar: ''
+          avatar: '',
+          polls: newPolls
         })
       })
-      .then( this.getData )
+      // .then( this.getData )
       .catch(err => console.log('error:', err))
   }
 
