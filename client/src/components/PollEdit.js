@@ -42,7 +42,7 @@ class PollEdit extends React.Component {
 
   handleDeleteChoice = (choiceIndex) => {
     const { pollChoices } = this.state
-    const newChoiceList = JSON.parse(JSON.stringify(pollChoices))
+    const newChoiceList = pollChoices
                             .filter((element, index) => (index !== choiceIndex))
                             .map(choice => { choice.votes = 0; return choice })
     this.setState({ pollChoices: newChoiceList })
@@ -50,7 +50,7 @@ class PollEdit extends React.Component {
 
   handleAddChoice = (newChoiceText) => {
     const { pollChoices } = this.state
-    const newChoiceList = JSON.parse(JSON.stringify(pollChoices))
+    const newChoiceList = pollChoices
                             .concat([{
                               text: newChoiceText,
                               votes: 0

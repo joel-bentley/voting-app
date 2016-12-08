@@ -71,7 +71,7 @@ class App extends React.Component {
   handleLogout = () => {
     return logout()
       .then( () => {
-        let newPolls = JSON.parse(JSON.stringify(this.state.polls))
+        let newPolls = this.state.polls
                         .map(poll => { poll.myPoll = false; return poll })
 
 
@@ -121,8 +121,7 @@ class App extends React.Component {
       newPolls[pollIndex].choiceSubmitted = null
 
     } else {
-      newPolls = JSON.parse(JSON.stringify(polls))
-                              .concat([{
+      newPolls = polls.concat([{
                                 pollId: pollId,
                                 title: pollTitle,
                                 choices: pollChoices,
@@ -139,7 +138,7 @@ class App extends React.Component {
 
   handlePollDelete = pollId => {
     const { polls } = this.state
-    const newPolls = JSON.parse(JSON.stringify(polls))
+    const newPolls = polls
                       .filter(poll => (poll.pollId !== pollId))
 
     this.setState({ polls: newPolls })
