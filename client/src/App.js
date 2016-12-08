@@ -15,8 +15,6 @@ import PollBallot from './components/PollBallot'
 import PollResults from './components/PollResults'
 import PollEdit from './components/PollEdit'
 
-import './App.css'
-
 
 const POLL_ID_LENGTH = 5
 const POLL_ID_CHAR = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789'
