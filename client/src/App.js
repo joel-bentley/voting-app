@@ -28,8 +28,7 @@ const postPollUpdate = (pollId, title, choices) =>
 const deletePoll = pollId => axios.delete(`${API}/poll/update`, { pollId });
 
 const generateRandomId = (length, characters) => {
-  return Array
-    .apply(null, Array(length))
+  return Array.apply(null, Array(length))
     .map(() => characters[Math.floor(Math.random() * characters.length)])
     .join('');
 };
@@ -39,7 +38,7 @@ class App extends React.Component {
 
   getData = () => {
     return axios
-      .all([ getProfile(), getPolls() ])
+      .all([getProfile(), getPolls()])
       .then(res => {
         const { userId, username, displayName, avatar } = res[0].data;
         const polls = res[1].data;
@@ -89,10 +88,8 @@ class App extends React.Component {
 
       this.setState({ polls: newPolls });
 
-      postPollVote(
-        pollId,
-        choiceSubmitted,
-      ).catch(err => console.log('error:', err));
+      postPollVote(pollId, choiceSubmitted).catch(err =>
+        console.log('error:', err));
     }
   };
 
@@ -123,11 +120,8 @@ class App extends React.Component {
 
     this.setState({ polls: newPolls });
 
-    postPollUpdate(
-      pollId,
-      pollTitle,
-      pollChoices,
-    ).catch(err => console.log('error:', err));
+    postPollUpdate(pollId, pollTitle, pollChoices).catch(err =>
+      console.log('error:', err));
   };
 
   handlePollDelete = pollId => {
@@ -155,147 +149,147 @@ class App extends React.Component {
           <Match exactly pattern="/" render={() => <Intro {...{ polls }} />} />
           <Match
             pattern="/login"
-            render={
-              props => (
-                <Login
-                  {...props}
-                  {...{ isAuthenticated, router }}
-                  handleLogin={this.handleLogin}
-                />
-              )
-            }
+            render={props => (
+              <Login
+                {...props}
+                {...{ isAuthenticated, router }}
+                handleLogin={this.handleLogin}
+              />
+            )}
           />
           <Match
             exactly
             pattern="/polls/:pollId"
             render={props => {
-                const { pollId } = props.params;
-                const poll = polls.filter(poll => poll.pollId === pollId)[0];
+              const { pollId } = props.params;
+              const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-                return poll
-                  ? <PollBallot
+              return poll
+                ? <PollBallot
                     poll={poll}
                     handleVoteSubmit={this.handleVoteSubmit}
                   />
-                  : <div>
+                : <div>
                     <h3>Poll not found</h3>
                     <Link to="/">View available polls</Link>
                   </div>;
-              }}
+            }}
           />
           <Match
             pattern="/polls/results/:pollId"
             render={props => {
-                const { pollId } = props.params;
-                const poll = polls.filter(poll => poll.pollId === pollId)[0];
+              const { pollId } = props.params;
+              const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-                return poll && poll.choiceSubmitted !== null ? <div>
+              return poll && poll.choiceSubmitted !== null
+                ? <div>
                     <PollResults poll={poll} />
-                  </div> : <div>
+                  </div>
+                : <div>
                     <Redirect to={`/polls/${pollId}`} />
                   </div>;
-              }}
+            }}
           />
           <MatchWhenAuthorized
             exactly
             pattern="/mypolls"
             isAuthenticated={isAuthenticated}
             render={props => {
-                const myPolls = polls.filter(poll => poll.myPoll);
+              const myPolls = polls.filter(poll => poll.myPoll);
 
-                return (
-                  <div>
-                    <Link to="/mypolls/new">
-                      {({ onClick }) => (
-                          <Button onClick={onClick}>
-                            Create new poll
-                          </Button>
-                        )}
-                    </Link>
-                    <div style={{ height: '27px' }} />
-                    <PollList polls={myPolls} />
-                  </div>
-                );
-              }}
+              return (
+                <div>
+                  <Link to="/mypolls/new">
+                    {({ onClick }) => (
+                      <Button onClick={onClick}>
+                        Create new poll
+                      </Button>
+                    )}
+                  </Link>
+                  <div style={{ height: '27px' }} />
+                  <PollList polls={myPolls} />
+                </div>
+              );
+            }}
           />
           <MatchWhenAuthorized
             exactly
             pattern="/mypolls/results"
             isAuthenticated={isAuthenticated}
             render={props => {
-                const myPolls = polls.filter(poll => poll.myPoll);
+              const myPolls = polls.filter(poll => poll.myPoll);
 
-                return (
-                  <div>
-                    {
-                      myPolls.length > 0
-                        ? myPolls.map((poll, index) => (
-                          <PollResults
-                            poll={poll}
-                            key={`mypoll-result-${index}`}
-                          />
-                        ))
-                        : <Redirect to="/mypolls" />
-                    }
-                  </div>
-                );
-              }}
+              return (
+                <div>
+                  {myPolls.length > 0
+                    ? myPolls.map((poll, index) => (
+                        <PollResults
+                          poll={poll}
+                          key={`mypoll-result-${index}`}
+                        />
+                      ))
+                    : <Redirect to="/mypolls" />}
+                </div>
+              );
+            }}
           />
           <MatchWhenAuthorized
             pattern="/mypolls/results/:pollId"
             isAuthenticated={isAuthenticated}
             render={props => {
-                const { pollId } = props.params;
-                const poll = polls.filter(poll => poll.pollId === pollId)[0];
+              const { pollId } = props.params;
+              const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-                return poll && poll.myPoll ? <div>
+              return poll && poll.myPoll
+                ? <div>
                     <PollResults poll={poll} />
-                  </div> : <Redirect to="/mypolls" />;
-              }}
+                  </div>
+                : <Redirect to="/mypolls" />;
+            }}
           />
           <MatchWhenAuthorized
             pattern="/mypolls/edit/:pollId"
             isAuthenticated={isAuthenticated}
             render={props => {
-                const { pollId } = props.params;
-                const poll = polls.filter(poll => poll.pollId === pollId)[0];
+              const { pollId } = props.params;
+              const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-                return poll && poll.myPoll
-                  ? <PollEdit
+              return poll && poll.myPoll
+                ? <PollEdit
                     {...{ poll, router }}
                     handlePollEditSubmit={this.handlePollEditSubmit}
                     handlePollDelete={this.handlePollDelete}
                   />
-                  : <Redirect to="/mypolls" />;
-              }}
+                : <Redirect to="/mypolls" />;
+            }}
           />
           <MatchWhenAuthorized
             pattern="/mypolls/new"
             isAuthenticated={isAuthenticated}
             render={props => {
-                let pollId;
-                const pollIdEqualTest = poll => poll.pollId === pollId;
+              let pollId;
+              const pollIdEqualTest = poll => poll.pollId === pollId;
 
-                do {
-                  pollId = generateRandomId(POLL_ID_LENGTH, POLL_ID_CHAR);
-                } while (polls.filter(pollIdEqualTest).length);
+              do {
+                pollId = generateRandomId(POLL_ID_LENGTH, POLL_ID_CHAR);
+              } while (polls.filter(pollIdEqualTest).length);
 
-                const poll = {
-                  pollId: pollId,
-                  title: '',
-                  choices: [],
-                  choiceSubmitted: null,
-                  myPoll: true,
-                };
+              const poll = {
+                pollId: pollId,
+                title: '',
+                choices: [],
+                choiceSubmitted: null,
+                myPoll: true,
+              };
 
-                return (
-                  <PollEdit
-                    {...{ poll, router }}
-                    handlePollEditSubmit={this.handlePollEditSubmit}
-                    handlePollDelete={this.handlePollDelete}
-                  />
-                );
-              }}
+              return (
+                <PollEdit
+                  {...{ poll, router }}
+                  handlePollEditSubmit={this.handlePollEditSubmit}
+                  handlePollDelete={this.handlePollDelete}
+                />
+              );
+            }}
           />
         </div>
       </div>

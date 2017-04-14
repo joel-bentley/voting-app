@@ -9,7 +9,7 @@ function generateToken(user) {
     iss: 'my.domain.com',
     sub: user.id,
     iat: moment().unix(),
-    exp: moment().add(7, 'days').unix()
+    exp: moment().add(7, 'days').unix(),
   };
   return jwt.sign(payload, process.env.TOKEN_SECRET);
 }
@@ -27,42 +27,49 @@ exports.authGithub = function(req, res) {
     client_id: req.body.clientId,
     client_secret: process.env.GITHUB_SECRET,
     redirect_uri: req.body.redirectUri,
-    grant_type: 'authorization_code'
+    grant_type: 'authorization_code',
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { json: true, form: params }, function(err, response, token) {
-    var accessToken = token.access_token;
-    var headers = {
+  request.post(
+    accessTokenUrl,
+    { json: true, form: params },
+    function(err, response, token) {
+      var accessToken = token.access_token;
+      var headers = {
         Authorization: 'Bearer ' + accessToken,
-        'User-Agent': 'VotingApp'
+        'User-Agent': 'VotingApp',
       };
 
-    // Step 2. Retrieve user's profile information.
-    request.get({ url: userUrl, headers: headers, json: true }, function(err, response, profile) {
-      if (profile.error) {
-        return res.status(500).send({ message: profile.error.message });
-      }
+      // Step 2. Retrieve user's profile information.
+      request.get(
+        { url: userUrl, headers: headers, json: true },
+        function(err, response, profile) {
+          if (profile.error) {
+            return res.status(500).send({ message: profile.error.message });
+          }
 
-      // Step 3. Create a new user account or return an existing one.
-      User.findOne({ 'github.userId': profile.id }, function(err, user) {
-        if (user) {
-          return res.send({ token: generateToken(user), user: user });
+          // Step 3. Create a new user account or return an existing one.
+          User.findOne({ 'github.userId': profile.id }, function(err, user) {
+            if (user) {
+              return res.send({ token: generateToken(user), user: user });
+            }
+
+            var newUser = new User();
+
+            newUser.github.userId = profile.id;
+            newUser.github.username = profile.login;
+            newUser.github.displayName = profile.name;
+            newUser.github.avatar = profile.avatar_url;
+
+            newUser.save(function(err) {
+              res.send({ token: generateToken(newUser), user: newUser });
+            });
+          });
         }
-
-        var newUser = new User();
-
-        newUser.github.userId = profile.id;
-        newUser.github.username = profile.login;
-        newUser.github.displayName = profile.name;
-        newUser.github.avatar = profile.avatar_url;
-
-        newUser.save(function(err) {
-          res.send({ token: generateToken(newUser), user: newUser });
-        });
-      });
-    });
-  });
+      );
+    }
+  );
 };
 
 exports.authGithubCallback = function(req, res) {

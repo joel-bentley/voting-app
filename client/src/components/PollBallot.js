@@ -62,36 +62,40 @@ class PollBallot extends React.Component {
         <Panel header={poll.title}>
           <ListGroup fill>
             {poll.choices.map((choice, index) => {
-                const isSubmitted = index === selectedItem;
-                return (
-                  <ListGroupItem
-                    onClick={() => this.handleOptionClick(index)}
-                    key={`choice-${index}`}
-                  >
-                    <Radio checked={isSubmitted} readOnly={isSubmitted}>
-                       {choice.text}
-                    </Radio>
-                  </ListGroupItem>
-                );
-              })}
+              const isSubmitted = index === selectedItem;
+              return (
+                <ListGroupItem
+                  onClick={() => this.handleOptionClick(index)}
+                  key={`choice-${index}`}
+                >
+                  <Radio checked={isSubmitted} readOnly={isSubmitted}>
+                    {choice.text}
+                  </Radio>
+                </ListGroupItem>
+              );
+            })}
           </ListGroup>
         </Panel>
-        {poll.choiceSubmitted !== null ? <div>
+        {poll.choiceSubmitted !== null
+          ? <div>
               <Button bsStyle="success" disabled={true}>
-                 Thank you for voting! <Glyphicon glyph="glyphicon-ok" />
+                Thank you for voting! <Glyphicon glyph="glyphicon-ok" />
               </Button>
               <Link to={`/polls/results/${poll.pollId}`}>View Results</Link>
-            </div> : isSubmitting ? <Button bsStyle="primary">
-                Submitting Vote...
-              </Button> : <div>
-                <Button
-                  bsStyle="primary"
-                  onClick={() => this.handleSubmitClick()}
-                >
-                  Submit Vote
+            </div>
+          : isSubmitting
+              ? <Button bsStyle="primary">
+                  Submitting Vote...
                 </Button>
-                <span>You can view results after you vote</span>
-              </div>}
+              : <div>
+                  <Button
+                    bsStyle="primary"
+                    onClick={() => this.handleSubmitClick()}
+                  >
+                    Submit Vote
+                  </Button>
+                  <span>You can view results after you vote</span>
+                </div>}
       </div>
     );
   }

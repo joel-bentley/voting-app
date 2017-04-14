@@ -48,75 +48,77 @@ class NavigationBar extends React.Component {
           <Nav>
             <Link to="/">
               {({ href, onClick }) => (
+                <NavItem
+                  href={href}
+                  onClick={onClick}
+                  onSelect={this.close}
+                  eventKey={1}
+                >
+                  Home
+                </NavItem>
+              )}
+            </Link>
+            {isAuthenticated &&
+              <Link to="/mypolls">
+                {({ href, onClick }) => (
                   <NavItem
                     href={href}
                     onClick={onClick}
                     onSelect={this.close}
-                    eventKey={1}
+                    eventKey={2}
                   >
-                    Home
+                    My Polls
                   </NavItem>
                 )}
-            </Link>
-            {isAuthenticated && (
-                  <Link to="/mypolls">
-                    {({ href, onClick }) => (
-                        <NavItem
-                          href={href}
-                          onClick={onClick}
-                          onSelect={this.close}
-                          eventKey={2}
-                        >
-                          My Polls
-                        </NavItem>
-                      )}
-                  </Link>
+              </Link>}
+            {isAuthenticated &&
+              <Link to="/mypolls/results">
+                {({ href, onClick }) => (
+                  <NavItem
+                    href={href}
+                    onClick={onClick}
+                    onSelect={this.close}
+                    eventKey={3}
+                  >
+                    My Poll Results
+                  </NavItem>
                 )}
-            {isAuthenticated && (
-                  <Link to="/mypolls/results">
-                    {({ href, onClick }) => (
-                        <NavItem
-                          href={href}
-                          onClick={onClick}
-                          onSelect={this.close}
-                          eventKey={3}
-                        >
-                          My Poll Results
-                        </NavItem>
-                      )}
-                  </Link>
-                )}
+              </Link>}
           </Nav>
           <Nav pullRight>
-            {isAuthenticated ? <NavDropdown
-                  title={(
-                      <span>
-                        <img src={avatar} role="presentation" />{displayName}
-                      </span>
-                    )}
+            {isAuthenticated
+              ? <NavDropdown
+                  title={
+                    <span>
+                      <img src={avatar} role="presentation" />{displayName}
+                    </span>
+                  }
                   eventKey={4}
                   id="basic-nav-dropdown"
                 >
                   {}
                   <MenuItem
                     onSelect={() => {
-                        handleLogout().then(() => {
-                          router.transitionTo('/');
-                        });
-                      }}
+                      handleLogout().then(() => {
+                        router.transitionTo('/');
+                      });
+                    }}
                     eventKey={4.2}
-                  > Logout </MenuItem>
-                </NavDropdown> : <Link to="/login">
+                  >
+                    {' '}Logout{' '}
+                  </MenuItem>
+                </NavDropdown>
+              : <Link to="/login">
                   {({ href, onClick }) => (
-                      <NavItem
-                        href={href}
-                        onClick={onClick}
-                        onSelect={this.close}
-                        eventKey={3}
-                      >
-                        Login
-                      </NavItem>
-                    )}
+                    <NavItem
+                      href={href}
+                      onClick={onClick}
+                      onSelect={this.close}
+                      eventKey={3}
+                    >
+                      Login
+                    </NavItem>
+                  )}
                 </Link>}
           </Nav>
         </Navbar.Collapse>

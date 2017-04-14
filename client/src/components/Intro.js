@@ -6,9 +6,11 @@ import PollList from './PollList';
 const Intro = ({ polls }) => (
   <div>
     <Jumbotron
-      style={
-        { paddingTop: '5px', paddingBottom: '30px', backgroundColor: '#eee' }
-      }
+      style={{
+        paddingTop: '5px',
+        paddingBottom: '30px',
+        backgroundColor: '#eee',
+      }}
     >
       <h1>Voting App</h1>
       <h3>An app for voting on user generated polls</h3>

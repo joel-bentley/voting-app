@@ -77,38 +77,40 @@ class PollEdit extends React.Component {
   render() {
     const { pollTitle, pollChoices } = this.state;
 
-    const panelHeader = pollTitle ? <div>
-        <span>{pollTitle}</span>
-        <span style={{ float: 'right' }}>
-          <Glyphicon
-            glyph="pencil"
-            title="Click here to edit poll question"
-            onClick={this.handleTitleEditIconClick}
-          />
-        </span>
-      </div> : <ControlledInput
-        placeholder="Enter poll question here"
-        onSubmit={this.handleTitleSubmitClick}
-        inputValue={this.state.titleInputValue}
-        buttonText="Submit poll question"
-      />;
+    const panelHeader = pollTitle
+      ? <div>
+          <span>{pollTitle}</span>
+          <span style={{ float: 'right' }}>
+            <Glyphicon
+              glyph="pencil"
+              title="Click here to edit poll question"
+              onClick={this.handleTitleEditIconClick}
+            />
+          </span>
+        </div>
+      : <ControlledInput
+          placeholder="Enter poll question here"
+          onSubmit={this.handleTitleSubmitClick}
+          inputValue={this.state.titleInputValue}
+          buttonText="Submit poll question"
+        />;
 
     return (
       <div>
         <Panel header={panelHeader}>
           <ListGroup>
             {pollChoices.map((choice, index) => (
-                <ListGroupItem key={`choice-editor-${index}`}>
-                  {choice.text}
-                  <span style={{ float: 'right' }}>
-                    <Glyphicon
-                      glyph="remove"
-                      title="Click here to remove this poll answer"
-                      onClick={() => this.handleDeleteChoice(index)}
-                    />
-                  </span>
-                </ListGroupItem>
-              ))}
+              <ListGroupItem key={`choice-editor-${index}`}>
+                {choice.text}
+                <span style={{ float: 'right' }}>
+                  <Glyphicon
+                    glyph="remove"
+                    title="Click here to remove this poll answer"
+                    onClick={() => this.handleDeleteChoice(index)}
+                  />
+                </span>
+              </ListGroupItem>
+            ))}
           </ListGroup>
         </Panel>
         <ControlledInput
@@ -117,18 +119,16 @@ class PollEdit extends React.Component {
           buttonText="Submit choice"
         />
         <br />
-        {
-          pollTitle !== '' && pollChoices.length > 1
-            ? <Button
+        {pollTitle !== '' && pollChoices.length > 1
+          ? <Button
               bsStyle="primary"
               onClick={() => this.handlePollSubmitClick()}
             >
               Submit this poll
             </Button>
-            : <Button bsStyle="warning" disabled={true}>
+          : <Button bsStyle="warning" disabled={true}>
               To submit poll, first enter question and multiple answers above
-            </Button>
-        }
+            </Button>}
         <span style={{ float: 'right' }}>
           <Button
             bsStyle="danger"

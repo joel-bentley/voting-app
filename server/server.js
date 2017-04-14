@@ -27,11 +27,14 @@ var app = express();
 // Connect to MongoDB.
 mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
 mongoose.connection.on('connected', function() {
-	console.log('%s MongoDB connection established!', chalk.green('✓'));
+  console.log('%s MongoDB connection established!', chalk.green('✓'));
 });
 mongoose.connection.on('error', function() {
-	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-	process.exit();
+  console.log(
+    '%s MongoDB connection error. Please make sure MongoDB is running.',
+    chalk.red('✗')
+  );
+  process.exit();
 });
 mongoose.Promise = global.Promise;
 
@@ -45,7 +48,9 @@ app.use(cookieParser());
 
 app.use(function(req, res, next) {
   req.isAuthenticated = function() {
-    var token = (req.headers.authorization && req.headers.authorization.split(' ')[1]) || req.cookies.token;
+    var token = (req.headers.authorization &&
+      req.headers.authorization.split(' ')[1]) ||
+      req.cookies.token;
     try {
       return jwt.verify(token, process.env.TOKEN_SECRET);
     } catch (err) {
@@ -64,12 +69,13 @@ app.use(function(req, res, next) {
   }
 });
 
-
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Primary app routes.
-app.get(['/', '/login', '/mypolls', '/mypolls/results', '/mypolls/new'],
-	routeController.index);
+app.get(
+  ['/', '/login', '/mypolls', '/mypolls/results', '/mypolls/new'],
+  routeController.index
+);
 
 // OAuth authentication routes.
 app.post('/auth/github', userController.authGithub);
@@ -77,27 +83,31 @@ app.get('/auth/github/callback', userController.authGithubCallback);
 
 // API routes.
 app.get('/api/profile', function(req, res) {
-
   if (req.isAuthenticated() && req.user) {
-		res.json(req.user.github);
-	} else {
-		res.json(
-			{
-					userId: '',
-					username: '',
-					displayName: '',
-					avatar: ''
-			}
-		)
-	}
+    res.json(req.user.github);
+  } else {
+    res.json({
+      userId: '',
+      username: '',
+      displayName: '',
+      avatar: '',
+    });
+  }
 });
 
 app.get('/api/polls', pollController.getPolls);
 app.post('/api/poll', pollController.postPollVote);
 
-app.post('/api/poll/update', userController.ensureAuthenticated, pollController.postPollUpdate);
-app.delete('/api/poll/update', userController.ensureAuthenticated, pollController.deletePoll);
-
+app.post(
+  '/api/poll/update',
+  userController.ensureAuthenticated,
+  pollController.postPollUpdate
+);
+app.delete(
+  '/api/poll/update',
+  userController.ensureAuthenticated,
+  pollController.deletePoll
+);
 
 // Production error handler
 if (app.get('env') === 'production') {
@@ -109,5 +119,10 @@ if (app.get('env') === 'production') {
 
 // Start Express server.
 app.listen(app.get('port'), function() {
-	console.log('%s Express server listening on port %d in %s mode.', chalk.green('✓'), app.get('port'), app.get('env'));
+  console.log(
+    '%s Express server listening on port %d in %s mode.',
+    chalk.green('✓'),
+    app.get('port'),
+    app.get('env')
+  );
 });
