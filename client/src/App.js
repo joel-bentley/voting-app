@@ -1,6 +1,11 @@
 import React from 'react';
-import { Link, Match, Redirect } from 'react-router';
-import { Button } from 'react-bootstrap';
+
+import Link from 'react-router/Link';
+import Match from 'react-router/Match';
+import Redirect from 'react-router/Redirect';
+
+import Button from 'react-bootstrap/lib/Button';
+
 import MatchWhenAuthorized from './components/MatchWhenAuthorized';
 import axios from 'axios';
 

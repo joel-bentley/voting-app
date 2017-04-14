@@ -1,5 +1,9 @@
 import React from 'react';
-import { ListGroup, ListGroupItem, Panel, ProgressBar } from 'react-bootstrap';
+
+import ListGroup from 'react-bootstrap/lib/ListGroup';
+import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
+import Panel from 'react-bootstrap/lib/Panel';
+import ProgressBar from 'react-bootstrap/lib/ProgressBar';
 
 import './PollResults.css';
 

@@ -1,13 +1,13 @@
 import React from 'react';
-import {
-  Button,
-  Glyphicon,
-  ListGroup,
-  ListGroupItem,
-  Panel,
-  Radio,
-} from 'react-bootstrap';
-import { Link } from 'react-router';
+
+import Button from 'react-bootstrap/lib/Button';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import ListGroup from 'react-bootstrap/lib/ListGroup';
+import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
+import Panel from 'react-bootstrap/lib/Panel';
+import Radio from 'react-bootstrap/lib/Radio';
+
+import Link from 'react-router/Link';
 
 import './PollBallot.css';
 

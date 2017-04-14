@@ -1,6 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { Button, Glyphicon, ListGroup, ListGroupItem } from 'react-bootstrap';
+
+import Link from 'react-router/Link';
+
+import Button from 'react-bootstrap/lib/Button';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import ListGroup from 'react-bootstrap/lib/ListGroup';
+import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
 
 import './PollList.css';
 
