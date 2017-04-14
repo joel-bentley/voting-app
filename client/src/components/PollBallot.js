@@ -56,7 +56,7 @@ class PollBallot extends React.Component {
       <div>
         <span style={{ float: 'right' }}>
           <Button bsStyle="primary" href={twitterHref} target="_blank">
-            Share poll on Twitter
+            Share this poll on Twitter
           </Button>
         </span>
         <Panel header={poll.title}>
@@ -81,7 +81,9 @@ class PollBallot extends React.Component {
               <Button bsStyle="success" disabled={true}>
                 Thank you for voting! <Glyphicon glyph="glyphicon-ok" />
               </Button>
-              <Link to={`/polls/results/${poll.pollId}`}>View Results</Link>
+              <Link to={`/polls/results/${poll.pollId}`}>
+                <span style={{ marginLeft: 15 }}>View Poll Results</span>
+              </Link>
             </div>
           : isSubmitting
               ? <Button bsStyle="primary">
@@ -94,7 +96,9 @@ class PollBallot extends React.Component {
                   >
                     Submit Vote
                   </Button>
-                  <span>You can view results after you vote</span>
+                  <span style={{ marginLeft: 15 }}>
+                    You can view results after you vote
+                  </span>
                 </div>}
       </div>
     );

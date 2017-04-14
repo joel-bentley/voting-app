@@ -17,7 +17,7 @@ const PollResults = ({ poll }) => {
           return (
             <ListGroupItem key={`results-${index}`}>
               <span>{choice.text}</span>
-              <span>{`(${choice.votes} votes)`}</span>
+              <span style={{ marginLeft: 15 }}>{`(${choice.votes} votes)`}</span>
               <ProgressBar label={percentage + '%'} now={percentage} />
             </ListGroupItem>
           );
