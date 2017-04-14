@@ -54,7 +54,7 @@ class PollBallot extends React.Component {
       `&url=${window.location.href}`;
     return (
       <div>
-        <span style={{ float: 'right' }}>
+        <span className="pull-right">
           <Button bsStyle="primary" href={twitterHref} target="_blank">
             Share this poll on Twitter
           </Button>
