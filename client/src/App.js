@@ -145,7 +145,7 @@ class App extends React.Component {
           {...{ router, isAuthenticated, displayName, avatar }}
           handleLogout={this.handleLogout}
         />
-        <div className="container">
+        <div className="container main">
           <Match exactly pattern="/" render={() => <Intro {...{ polls }} />} />
           <Match
             pattern="/login"

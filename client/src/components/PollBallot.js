@@ -97,7 +97,7 @@ class PollBallot extends React.Component {
                     Submit Vote
                   </Button>
                   <span style={{ marginLeft: 15 }}>
-                    You can view results after you vote
+                    View results after you vote
                   </span>
                 </div>}
       </div>
