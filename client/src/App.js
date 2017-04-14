@@ -45,7 +45,7 @@ class App extends React.Component {
         // console.dir({polls})
         this.setState({ userId, username, displayName, avatar, polls });
       })
-      .catch(err => console.log('error:', err));
+      .catch(err => console.error('error:', err));
   };
 
   componentDidMount() {
@@ -73,7 +73,7 @@ class App extends React.Component {
           polls: newPolls,
         });
       })
-      .catch(err => console.log('error:', err));
+      .catch(err => console.error('error:', err));
   };
 
   handleVoteSubmit = (pollId, choiceSubmitted) => {
@@ -89,7 +89,7 @@ class App extends React.Component {
       this.setState({ polls: newPolls });
 
       postPollVote(pollId, choiceSubmitted).catch(err =>
-        console.log('error:', err));
+        console.error('error:', err));
     }
   };
 
@@ -121,7 +121,7 @@ class App extends React.Component {
     this.setState({ polls: newPolls });
 
     postPollUpdate(pollId, pollTitle, pollChoices).catch(err =>
-      console.log('error:', err));
+      console.error('error:', err));
   };
 
   handlePollDelete = pollId => {
@@ -130,7 +130,7 @@ class App extends React.Component {
 
     this.setState({ polls: newPolls });
 
-    deletePoll(pollId).catch(err => console.log('error:', err));
+    deletePoll(pollId).catch(err => console.error('error:', err));
   };
 
   render() {

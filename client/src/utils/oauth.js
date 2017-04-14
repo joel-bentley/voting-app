@@ -1,6 +1,6 @@
 import url from 'url';
 import qs from 'querystring';
-import moment from 'moment';
+import addHours from 'date-fns/add_hours';
 import cookie from 'react-cookie';
 
 // Sign in with Github
@@ -76,7 +76,7 @@ function pollPopup({ window, config }) {
               const params = Object.assign({}, query, hash);
 
               if (params.error) {
-                console.log('OAUTH_FAILURE: ', params.error);
+                console.error('OAUTH_FAILURE: ', params.error);
               } else {
                 resolve({
                   oauthData: params,
@@ -86,7 +86,7 @@ function pollPopup({ window, config }) {
                 });
               }
             } else {
-              console.log(
+              console.error(
                 'OAUTH_FAILURE: ',
                 'OAuth redirect has occurred but no query or hash parameters were found.'
               );
@@ -123,7 +123,7 @@ function exchangeCodeForToken({ oauthData, config, window, interval }) {
         });
       } else {
         return response.json().then(json => {
-          console.log('OAUTH_FAILURE: ', Array.isArray(json) ? json : [json]);
+          console.error('OAUTH_FAILURE: ', Array.isArray(json) ? json : [json]);
           closePopup({ window: window, interval: interval });
         });
       }
@@ -134,7 +134,7 @@ function exchangeCodeForToken({ oauthData, config, window, interval }) {
 function signIn({ token, user, window, interval }) {
   return new Promise((resolve, reject) => {
     console.log('OAUTH_SUCCESS');
-    cookie.save('token', token, { expires: moment().add(1, 'hour').toDate() });
+    cookie.save('token', token, { expires: addHours(new Date(), 1) });
 
     resolve({ window: window, interval: interval });
   });
