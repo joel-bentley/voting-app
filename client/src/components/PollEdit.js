@@ -76,23 +76,25 @@ class PollEdit extends React.Component {
   render() {
     const { pollTitle, pollChoices } = this.state;
 
-    const panelHeader = pollTitle
-      ? <div>
-          <span>{pollTitle}</span>
-          <span style={{ float: 'right' }}>
-            <Glyphicon
-              glyph="pencil"
-              title="Click here to edit poll question"
-              onClick={this.handleTitleEditIconClick}
-            />
-          </span>
-        </div>
-      : <ControlledInput
-          placeholder="Enter poll question here"
-          onSubmit={this.handleTitleSubmitClick}
-          inputValue={this.state.titleInputValue}
-          buttonText="Submit poll question"
-        />;
+    const panelHeader = pollTitle ? (
+      <div>
+        <span>{pollTitle}</span>
+        <span style={{ float: 'right' }}>
+          <Glyphicon
+            glyph="pencil"
+            title="Click here to edit poll question"
+            onClick={this.handleTitleEditIconClick}
+          />
+        </span>
+      </div>
+    ) : (
+      <ControlledInput
+        placeholder="Enter poll question here"
+        onSubmit={this.handleTitleSubmitClick}
+        inputValue={this.state.titleInputValue}
+        buttonText="Submit poll question"
+      />
+    );
 
     return (
       <div>
@@ -118,16 +120,18 @@ class PollEdit extends React.Component {
           buttonText="Submit choice"
         />
         <br />
-        {pollTitle !== '' && pollChoices.length > 1
-          ? <Button
-              bsStyle="primary"
-              onClick={() => this.handlePollSubmitClick()}
-            >
-              Submit this poll
-            </Button>
-          : <Button bsStyle="warning" disabled={true}>
-              To submit poll, first enter question and multiple answers above
-            </Button>}
+        {pollTitle !== '' && pollChoices.length > 1 ? (
+          <Button
+            bsStyle="primary"
+            onClick={() => this.handlePollSubmitClick()}
+          >
+            Submit this poll
+          </Button>
+        ) : (
+          <Button bsStyle="warning" disabled={true}>
+            To submit poll, first enter question and multiple answers above
+          </Button>
+        )}
         <span style={{ float: 'right' }}>
           <Button
             bsStyle="danger"
@@ -144,9 +148,7 @@ class PollEdit extends React.Component {
           <Modal.Header>
             <Modal.Title>Confirm Poll Deletion</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            Are you sure you want to delete this poll?
-          </Modal.Body>
+          <Modal.Body>Are you sure you want to delete this poll?</Modal.Body>
           <Modal.Footer>
             <Button onClick={() => this.setState({ showModal: false })}>
               Cancel

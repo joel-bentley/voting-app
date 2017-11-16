@@ -58,47 +58,44 @@ function pollPopup({ window, config }) {
     const redirectUri = url.parse(config.redirectUri);
     const redirectUriPath = redirectUri.host + redirectUri.pathname;
 
-    const polling = setInterval(
-      () => {
-        if (!window || window.closed) {
-          clearInterval(polling);
-        }
-        try {
-          const popupUrlPath = window.location.host + window.location.pathname;
-          if (popupUrlPath === redirectUriPath) {
-            if (window.location.search || window.location.hash) {
-              const query = qs.parse(
-                window.location.search.substring(1).replace(/\/$/, '')
-              );
-              const hash = qs.parse(
-                window.location.hash.substring(1).replace(/[\/$]/, '')
-              );
-              const params = Object.assign({}, query, hash);
+    const polling = setInterval(() => {
+      if (!window || window.closed) {
+        clearInterval(polling);
+      }
+      try {
+        const popupUrlPath = window.location.host + window.location.pathname;
+        if (popupUrlPath === redirectUriPath) {
+          if (window.location.search || window.location.hash) {
+            const query = qs.parse(
+              window.location.search.substring(1).replace(/\/$/, '')
+            );
+            const hash = qs.parse(
+              window.location.hash.substring(1).replace(/[\/$]/, '')
+            );
+            const params = Object.assign({}, query, hash);
 
-              if (params.error) {
-                console.error('OAUTH_FAILURE: ', params.error);
-              } else {
-                resolve({
-                  oauthData: params,
-                  config: config,
-                  window: window,
-                  interval: polling,
-                });
-              }
+            if (params.error) {
+              console.error('OAUTH_FAILURE: ', params.error);
             } else {
-              console.error(
-                'OAUTH_FAILURE: ',
-                'OAuth redirect has occurred but no query or hash parameters were found.'
-              );
+              resolve({
+                oauthData: params,
+                config: config,
+                window: window,
+                interval: polling,
+              });
             }
+          } else {
+            console.error(
+              'OAUTH_FAILURE: ',
+              'OAuth redirect has occurred but no query or hash parameters were found.'
+            );
           }
-        } catch (error) {
-          // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
-          // A hack to get around same-origin security policy errors in Internet Explorer.
         }
-      },
-      500
-    );
+      } catch (error) {
+        // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+        // A hack to get around same-origin security policy errors in Internet Explorer.
+      }
+    }, 500);
   });
 }
 

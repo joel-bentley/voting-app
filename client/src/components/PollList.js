@@ -29,24 +29,26 @@ const PollList = ({ polls }) => (
                 </ListGroupItem>
               )}
             </Link>
-            {poll.myPoll
-              ? <span className="poll-edit-buttons">
-                  <Link to={`/mypolls/edit/${poll.pollId}`}>
-                    {({ onClick }) => (
-                      <Button
-                        bsStyle="warning"
-                        className="poll-edit-btn"
-                        onClick={onClick}
-                      >
-                        <Glyphicon
-                          glyph="pencil"
-                          title="Click here to edit this poll"
-                        />
-                      </Button>
-                    )}
-                  </Link>
-                </span>
-              : <div style={{ height: '27px' }} />}
+            {poll.myPoll ? (
+              <span className="poll-edit-buttons">
+                <Link to={`/mypolls/edit/${poll.pollId}`}>
+                  {({ onClick }) => (
+                    <Button
+                      bsStyle="warning"
+                      className="poll-edit-btn"
+                      onClick={onClick}
+                    >
+                      <Glyphicon
+                        glyph="pencil"
+                        title="Click here to edit this poll"
+                      />
+                    </Button>
+                  )}
+                </Link>
+              </span>
+            ) : (
+              <div style={{ height: '27px' }} />
+            )}
           </div>
         );
       })}

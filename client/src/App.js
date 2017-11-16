@@ -21,7 +21,8 @@ import PollResults from './components/PollResults';
 import PollEdit from './components/PollEdit';
 
 const POLL_ID_LENGTH = 5;
-const POLL_ID_CHAR = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789';
+const POLL_ID_CHAR =
+  'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz123456789';
 
 const API = '/api';
 const getProfile = () => axios.get(`${API}/profile`);
@@ -94,7 +95,8 @@ class App extends React.Component {
       this.setState({ polls: newPolls });
 
       postPollVote(pollId, choiceSubmitted).catch(err =>
-        console.error('error:', err));
+        console.error('error:', err)
+      );
     }
   };
 
@@ -126,7 +128,8 @@ class App extends React.Component {
     this.setState({ polls: newPolls });
 
     postPollUpdate(pollId, pollTitle, pollChoices).catch(err =>
-      console.error('error:', err));
+      console.error('error:', err)
+    );
   };
 
   handlePollDelete = pollId => {
@@ -169,15 +172,17 @@ class App extends React.Component {
               const { pollId } = props.params;
               const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-              return poll
-                ? <PollBallot
-                    poll={poll}
-                    handleVoteSubmit={this.handleVoteSubmit}
-                  />
-                : <div>
-                    <h3>Poll not found</h3>
-                    <Link to="/">View available polls</Link>
-                  </div>;
+              return poll ? (
+                <PollBallot
+                  poll={poll}
+                  handleVoteSubmit={this.handleVoteSubmit}
+                />
+              ) : (
+                <div>
+                  <h3>Poll not found</h3>
+                  <Link to="/">View available polls</Link>
+                </div>
+              );
             }}
           />
           <Match
@@ -186,13 +191,15 @@ class App extends React.Component {
               const { pollId } = props.params;
               const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-              return poll && poll.choiceSubmitted !== null
-                ? <div>
-                    <PollResults poll={poll} />
-                  </div>
-                : <div>
-                    <Redirect to={`/polls/${pollId}`} />
-                  </div>;
+              return poll && poll.choiceSubmitted !== null ? (
+                <div>
+                  <PollResults poll={poll} />
+                </div>
+              ) : (
+                <div>
+                  <Redirect to={`/polls/${pollId}`} />
+                </div>
+              );
             }}
           />
           <MatchWhenAuthorized
@@ -206,9 +213,7 @@ class App extends React.Component {
                 <div>
                   <Link to="/mypolls/new">
                     {({ onClick }) => (
-                      <Button onClick={onClick}>
-                        Create new poll
-                      </Button>
+                      <Button onClick={onClick}>Create new poll</Button>
                     )}
                   </Link>
                   <div style={{ height: '27px' }} />
@@ -226,14 +231,13 @@ class App extends React.Component {
 
               return (
                 <div>
-                  {myPolls.length > 0
-                    ? myPolls.map((poll, index) => (
-                        <PollResults
-                          poll={poll}
-                          key={`mypoll-result-${index}`}
-                        />
-                      ))
-                    : <Redirect to="/mypolls" />}
+                  {myPolls.length > 0 ? (
+                    myPolls.map((poll, index) => (
+                      <PollResults poll={poll} key={`mypoll-result-${index}`} />
+                    ))
+                  ) : (
+                    <Redirect to="/mypolls" />
+                  )}
                 </div>
               );
             }}
@@ -245,11 +249,13 @@ class App extends React.Component {
               const { pollId } = props.params;
               const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-              return poll && poll.myPoll
-                ? <div>
-                    <PollResults poll={poll} />
-                  </div>
-                : <Redirect to="/mypolls" />;
+              return poll && poll.myPoll ? (
+                <div>
+                  <PollResults poll={poll} />
+                </div>
+              ) : (
+                <Redirect to="/mypolls" />
+              );
             }}
           />
           <MatchWhenAuthorized
@@ -259,13 +265,15 @@ class App extends React.Component {
               const { pollId } = props.params;
               const poll = polls.filter(poll => poll.pollId === pollId)[0];
 
-              return poll && poll.myPoll
-                ? <PollEdit
-                    {...{ poll, router }}
-                    handlePollEditSubmit={this.handlePollEditSubmit}
-                    handlePollDelete={this.handlePollDelete}
-                  />
-                : <Redirect to="/mypolls" />;
+              return poll && poll.myPoll ? (
+                <PollEdit
+                  {...{ poll, router }}
+                  handlePollEditSubmit={this.handlePollEditSubmit}
+                  handlePollDelete={this.handlePollDelete}
+                />
+              ) : (
+                <Redirect to="/mypolls" />
+              );
             }}
           />
           <MatchWhenAuthorized

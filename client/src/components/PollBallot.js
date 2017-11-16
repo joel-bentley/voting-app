@@ -49,7 +49,8 @@ class PollBallot extends React.Component {
 
   render() {
     const { poll, selectedItem, isSubmitting } = this.state;
-    const twitterHref = 'http://twitter.com/share?text=' +
+    const twitterHref =
+      'http://twitter.com/share?text=' +
       `${poll.title}${'%0A'}Vote here: ` +
       `&url=${window.location.href}`;
     return (
@@ -76,30 +77,25 @@ class PollBallot extends React.Component {
             })}
           </ListGroup>
         </Panel>
-        {poll.choiceSubmitted !== null
-          ? <div>
-              <Button bsStyle="success" disabled={true}>
-                Thank you for voting! <Glyphicon glyph="glyphicon-ok" />
-              </Button>
-              <Link to={`/polls/results/${poll.pollId}`}>
-                <span style={{ marginLeft: 15 }}>View Poll Results</span>
-              </Link>
-            </div>
-          : isSubmitting
-              ? <Button bsStyle="primary">
-                  Submitting Vote...
-                </Button>
-              : <div>
-                  <Button
-                    bsStyle="primary"
-                    onClick={() => this.handleSubmitClick()}
-                  >
-                    Submit Vote
-                  </Button>
-                  <span style={{ marginLeft: 15 }}>
-                    View results after you vote
-                  </span>
-                </div>}
+        {poll.choiceSubmitted !== null ? (
+          <div>
+            <Button bsStyle="success" disabled={true}>
+              Thank you for voting! <Glyphicon glyph="glyphicon-ok" />
+            </Button>
+            <Link to={`/polls/results/${poll.pollId}`}>
+              <span style={{ marginLeft: 15 }}>View Poll Results</span>
+            </Link>
+          </div>
+        ) : isSubmitting ? (
+          <Button bsStyle="primary">Submitting Vote...</Button>
+        ) : (
+          <div>
+            <Button bsStyle="primary" onClick={() => this.handleSubmitClick()}>
+              Submit Vote
+            </Button>
+            <span style={{ marginLeft: 15 }}>View results after you vote</span>
+          </div>
+        )}
       </div>
     );
   }

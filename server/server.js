@@ -48,8 +48,8 @@ app.use(cookieParser());
 
 app.use(function(req, res, next) {
   req.isAuthenticated = function() {
-    var token = (req.headers.authorization &&
-      req.headers.authorization.split(' ')[1]) ||
+    var token =
+      (req.headers.authorization && req.headers.authorization.split(' ')[1]) ||
       req.cookies.token;
     try {
       return jwt.verify(token, process.env.TOKEN_SECRET);
